@@ -1,0 +1,29 @@
+{
+  "name": "bub",
+  "version": "1.0.0",
+  "description": "battle ultra bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:watch": "npx tsc --watch",
+    "start": "node dist/bub.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickagliano/bub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nickagliano/bub/issues"
+  },
+  "homepage": "https://github.com/nickagliano/bub#readme",
+  "devDependencies": {
+    "@types/node": "^12.12.14",
+    "@types/ws": "^6.0.4",
+    "typescript": "^3.7.2",
+    "ws": "^7.2.0"
+  },
+  "dependencies": {}
+}
