@@ -2,7 +2,6 @@
 battle ultra bot
 
 ## setup
-#
 first u should create config file called `bub.json` in the root directory of the repo
 this should have the following format:
 ```
