@@ -43,14 +43,19 @@ export default class Client
         });
     }
 
-    private log(msg: string)
+    private log(msg: string): void
     {
         this.logStream.write(msg);
     }
 
-    private sanitizeName(text: string)
+    private sanitizeName(text: string): string
     {
         return text.toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    public write(message: string): void
+    {
+        this.socket.send(message);
     }
 
     private handleMessage(tokens: string[]): void
@@ -122,8 +127,8 @@ export default class Client
                                 return;
                             }
     
-                            this.socket.send("|/trn " + this.sanitizeName(this.config.username) + ",300," + assertion);
-                            this.socket.send("|/avatar 120");
+                            this.write("|/trn " + this.sanitizeName(this.config.username) + ",300," + assertion);
+                            this.write("|/avatar 120");
                         });
                     }
                 );
