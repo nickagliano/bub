@@ -2,3 +2,6 @@ dist
 node_modules
 bub.json
 log.txt
+ai/tic-tac-toe
+ai/venv
+ai/test.py
