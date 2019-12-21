@@ -32,13 +32,25 @@ export default class Client
 
         this.socket.on("message", (_data) =>
         {
-            const data = _data.toString();
+            const data = _data.toString().trim();
             console.log("received: ", data);
         
             if (data.length > 0 && data[0] === "|")
             {
                 const tokens = data.toString().substr(1).split("|");
-                this.handleMessage(tokens);
+                this.handleMessage("", tokens);
+            }
+            else if (data.length > 0 && data[0] === ">")
+            {
+                const lines = data.split("\n");
+                const roomId = lines.splice(0, 1)[0].substr(1);
+                lines.forEach((line) =>
+                {
+                    if (line.startsWith("|"))
+                    {
+                        this.handleMessage(roomId, line.substr(1).split("|"));
+                    }
+                });
             }
         });
     }
@@ -55,10 +67,16 @@ export default class Client
 
     public write(message: string): void
     {
+        console.log("sending: " + message);
         this.socket.send(message);
     }
 
-    private handleMessage(tokens: string[]): void
+    public findBattle(): void
+    {
+        this.write("/battle!");
+    }
+
+    private handleMessage(roomId: string, tokens: string[]): void
     {
         switch (tokens[0])
         {
@@ -149,6 +167,35 @@ export default class Client
                     this.receivedAck = true;
                     this.onconnect();
                 }
+                break;
+            }
+            case "request":
+            {
+                if (tokens[1] && tokens[1].trim())
+                {
+                    const data = JSON.parse(tokens[1]);
+    
+                    if (data.forceSwitch)
+                    {
+                        // switch //
+                        const pokemon = data.side.pokemon;
+                        const switchTo = pokemon.findIndex(p => p.condition !== "0 fnt" && p.active === false) + 1;
+                        this.write(roomId + "|/switch " + switchTo.toString());
+                    }
+                    else if (data.active)
+                    {
+                        // pick move //
+                        const numMoves = data.active[0].moves.length;
+                        const pick = Math.floor(Math.random() * numMoves) + 1;
+                        this.write(roomId + "|/move " + pick.toString());
+                    }
+                    else
+                    {
+                        console.error("weird request", data);
+                    }
+                }
+
+                break;
             }
         }
     }

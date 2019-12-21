@@ -43,6 +43,7 @@ function init()
 
     readline.on("line", (input) =>
     {
+        console.log("sending: " + input);
         client.write(input);
     });
 }
