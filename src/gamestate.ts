@@ -1,26 +1,29 @@
 export type PokeType = "normal" | "fire" | "fighting" | "water" | "flying" | "grass" | "poison" | "electric" | "ground" | "psychic" | "rock" | "ice" | "bug" | "dragon" | "ghost" | "dark" | "steel" | "fairy" | "???";
 
 export type PokeStatus = "none" | "burn" | "freeze" | "paralysis" | "poison" | "toxic poison" | "sleep";
-export type VolatilePokeStatus = "bind" | "confuse" | "trap" | "curse" | "embargo" | "encore" | "flinch" | "heal block" | "identify" | "infatuate" | "leech seed" | "nightmare" | "perish song" | "taunt" | "telekinesis" | "torment" | "aqua ring" | "endure" | "charge move" | "center of attention" | "defense curl" | "root" | "magic coat" | "magnetic levitate" | "minimize" | "protect" | "recharge" | "fly" | "dig" | "dive" | "shadow force" | "substitute" | "lock on" | "withdraw";
+export type VolatilePokeStatus = "bind" | "confuse" | "trap" | "curse" | "embargo" | "encore" | "flinch" | "heal block" | "identify" | "infatuate" | "ground" | "leech seed" | "nightmare" | "perish song" | "taunt" | "telekinesis" | "torment" | "aqua ring" | "endure" | "charge move" | "center of attention" | "defense curl" | "root" | "magic coat" | "magnetic levitate" | "minimize" | "protect" | "recharge" | "fly" | "dig" | "dive" | "shadow force" | "substitute" | "lock on" | "withdraw";
+export type MoveEffect = PokeStatus | VolatilePokeStatus | "heal" | "drain" | "refresh";
 
 export interface MoveData
 {
     power: number;
     type: PokeType;
-    statusEffects: (PokeStatus | VolatilePokeStatus)[];
+    statusEffects: MoveEffect[];
     statusTargets: ("self" | "opponent")[];
     statusLikelihoods: number[];
     pp: number;
+    category: "physical" | "special" | "status";
+    healType: "none" | "50%" | "100%" | "moonlight" | "morning sun" | "purify" | "shore up" | "strength sap" | "sythesis";
 };
 
 export interface PokeBaseStats
 {
     hp: number;
-    atk: number;
-    def: number;
-    spa: number;
-    spd: number;
-    spe: number;
+    attack: number;
+    defense: number;
+    specialAttack: number;
+    specialDefense: number;
+    speed: number;
 };
 
 export interface PokeBattleStats extends PokeBaseStats
