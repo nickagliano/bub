@@ -13,7 +13,7 @@ export interface MoveData
     pp: number;
 };
 
-export interface PokeStats
+export interface PokeBaseStats
 {
     hp: number;
     atk: number;
@@ -23,14 +23,20 @@ export interface PokeStats
     spe: number;
 };
 
+export interface PokeBattleStats extends PokeBaseStats
+{
+    accuracy: number;
+    evasion: number;
+};
+
 export interface PokeData
 {
     knownMoves: MoveData[];
     types: PokeType[];
     status: PokeStatus;
     volatileStatuses: VolatilePokeStatus[];
-    baseStats: PokeStats;
-    actualStats: PokeStats;
+    baseStats: PokeBaseStats;
+    actualStats: PokeBattleStats;
     item: string; // we'll need an item dex..? idk x_x
     itemConsumed: boolean;
     ability: string; // special case for this and item if we don't know (like "unknown")
