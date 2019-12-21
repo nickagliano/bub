@@ -10,6 +10,7 @@ export interface MoveData
     statusEffects: (PokeStatus | VolatilePokeStatus)[];
     statusTargets: ("self" | "opponent")[];
     statusLikelihoods: number[];
+    pp: number;
 };
 
 export interface PokeStats
