@@ -48,6 +48,12 @@ export interface PokeData
     ability: string; // special case for this and item if we don't know (like "unknown")
 };
 
+export interface VariableTurnCount
+{
+    minTurnsRemaining: number;
+    maxTurnsRemaining: number;
+};
+
 export interface BattleSide
 {
     activePokemon: PokeData;
@@ -56,17 +62,27 @@ export interface BattleSide
     stickyWeb: boolean;
     toxicSpikesLevel: number;
     spikesLevel: number;
-    lightScreen: boolean;
-    reflect: boolean;
-    auroraVeil: boolean;
-    tailwind: boolean;
+    lightScreen: VariableTurnCount;
+    reflect: VariableTurnCount;
+    auroraVeil: VariableTurnCount;
+    tailwind: number;
+};
+
+export interface Weather extends VariableTurnCount
+{
+    type: "none" | "sand" | "rain" | "sun" | "hail";
+};
+
+export interface Terrain extends VariableTurnCount
+{
+    type: "none" | "psychic" | "electric" | "fairy" | "grassy";
 };
 
 export interface GameState
 {
     mySide: BattleSide;
     oppSide: BattleSide;
-    weather: "none" | "sand" | "rain" | "sun" | "hail";
-    terrain: "none" | "psychic" | "electric" | "fairy" | "grassy";
+    weather: Weather;
+    terrain: Terrain;
     turn: number;
 };
