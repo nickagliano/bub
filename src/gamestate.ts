@@ -34,6 +34,7 @@ export interface MoveData
     effects: MoveEffect[];
     pp: number;
     category: "physical" | "special" | "status";
+    accuracy: number;
 
     // should we represent these differently... like give conditions for healing amounts (e.g. halved in rain etc) //
     healType: "none" | "50%" | "100%" | "moonlight" | "morning sun" | "purify" | "shore up" | "strength sap" | "sythesis";
