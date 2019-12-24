@@ -1,6 +1,11 @@
 import * as fs from "fs";
 import Client from "./client";
-import { spawn, ChildProcessWithoutNullStreams } from "child_process"
+import { spawn, ChildProcessWithoutNullStreams } from "child_process";
+
+const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 let bub: ChildProcessWithoutNullStreams;
 
@@ -35,4 +40,10 @@ function init()
     bub.stdout.pipe(process.stdout);
     writeToBub("sup");
     bub.stdin.end();
+
+    readline.on("line", (input) =>
+    {
+        console.log("sending: " + input);
+        client.write(input);
+    });
 }
