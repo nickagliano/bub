@@ -34,6 +34,7 @@ export interface MoveData
     effects: MoveEffect[];
     pp: number;
     category: "physical" | "special" | "status";
+    accuracy: number;
 
     // should we represent these differently... like give conditions for healing amounts (e.g. halved in rain etc) //
     healType: "none" | "50%" | "100%" | "moonlight" | "morning sun" | "purify" | "shore up" | "strength sap" | "sythesis";
@@ -61,6 +62,7 @@ export interface PokeBattleStats extends PokeBaseStats
 export interface PokeData
 {
     knownMoves: MoveData[];
+    possibleMoves: MoveData[];
     types: PokeType[];
     status: NonvolatileStatus;
     volatileStatuses: VolatileStatus[];
@@ -68,7 +70,8 @@ export interface PokeData
     battleStats: PokeBattleStats;
     item: string; // we'll need an item dex..? idk x_x
     itemConsumed: boolean;
-    ability: string; // special case for this and item if we don't know (like "unknown")
+    knownAbility: string; // "unknown" if not known, but for bubs pokemon it will be known.. hopefully..
+    possibleAbilities: string[];
 };
 
 // battle stuff //
