@@ -5,6 +5,7 @@ import * as https from "https";
 import * as fs from "fs";
 import * as url from "url";
 import { Config } from "./types";
+import StateBuilder from "./statebuilder";
 
 export default class Client
 {
@@ -19,9 +20,13 @@ export default class Client
     private onconnect: () => any;
     private receivedAck = false;
     private logStream: fs.WriteStream;
+    private stateBuilder: StateBuilder;
 
     constructor(config: Config, onconnect: () => any)
     {
+        // set up statebuilder //
+        this.stateBuilder = new StateBuilder();
+
         // set up logging //
         this.logStream = fs.createWriteStream("log.txt", { flags: "a", encoding: "utf8" });
 
@@ -175,7 +180,11 @@ export default class Client
                 {
                     const data = JSON.parse(tokens[1]);
     
-                    if (data.forceSwitch)
+                    if (data.teamPreview)
+                    {
+                        this.stateBuilder.parseFirstRequest(data);
+                    }
+                    else if (data.forceSwitch)
                     {
                         // switch //
                         const pokemon = data.side.pokemon;
