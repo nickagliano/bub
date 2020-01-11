@@ -13,9 +13,13 @@ NUM_ITEMS = 413
 NUM_ABILITIES = 262
 NUM_POKEMON = 1198
 
-# a gym environment consists of an init function + 4 other functions
+# the code below was just taken from a tictactoe environment, it still needs
+#     to be adapted to the pokemon environment
+
 class Pokemon(gym.Env):
+"""A Pokémon Showdown environment for OpenAI gym"""
 	
+	# the init function is where the observation_space and action_space will be defined
 	def __init__(self):
 		self.state = []
 		for i in range(3):
@@ -26,9 +30,10 @@ class Pokemon(gym.Env):
 		self.done = 0
 		self.add = [0, 0]
 		self.reward = 0
-		
-		
-		
+
+	# the check function isn't actually required
+	# used to check if a certain condition has been met
+	# for tictactoe, it's used to see if someone has won 
 	def check(self):
 		if(self.counter<5):
 			return 0
@@ -54,8 +59,9 @@ class Pokemon(gym.Env):
 			else:
 				return 2
 				
-				
 
+	# At each step we will take the specified action (chosen by our model), 
+	#     calculate the reward, and return the next observation.
 	def step(self, target):
 		if self.done == 1:
 			print("Game Over")
@@ -86,7 +92,8 @@ class Pokemon(gym.Env):
 		return [self.state, self.reward, self.done, self.add]
 		
 		
-		
+	# called any time a new environment is created, or to reset an existing environment’s state
+	# here we set the team available to BUB, all the info we have about his opponents team, etc.
 	def reset(self):
 		for i in range(3):
 			for j in range(3):
@@ -97,8 +104,9 @@ class Pokemon(gym.Env):
 		self.reward = 0
 		return self.state
 		
-		
-
+	# Render the environment to the screen. 
+	# For tictactoe this is just updating the board, but for BUB we could do 
+	#     some cool things to visualize his little brain
 	def render(self):
 		for i in range(3):
 			for j in range(3):
