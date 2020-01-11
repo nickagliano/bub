@@ -1,5 +1,5 @@
 ############################################################################################################
-##### this code is not meant to be run as-is, just drafting what the observation space might look like #####
+##### this code is not meant to be run as-is, just drafting what the environment might look like       #####
 ############################################################################################################
 
 from gym import spaces
@@ -75,4 +75,19 @@ observation_space = spaces.Dict({
     "weather": spaces.Discrete(5), # 0 is none
     "terrain": spaces.Discrete(5), # 0 is none
     "turn": spaces.Box(min=1, max=np.inf, shape=(1,1), dtype=np.int32)
+})
+
+
+### POTENTIAL ACTION SPACES ..... ? ###
+
+# action space made with boxes
+action_space = spaces.Dict({
+	moveActionsBox = spaces.Box(low=0, high=1, shape(numMoves + 1, 1), dtype=np.bool), # which moves BUB can use
+	switchActionsBox = spaces.Box(low=0, high=1, shape(numPokemon + 1, 1), dtype=np.bool) # which pokemon BUB can switch to
+})
+
+# action space made with discretes
+action_space = spaces.Dict({
+	moveActionsDiscrete = spaces.Discrete(numMoves + 1), # which moves BUB can choose
+	switchActionsDiscrete = spaces.Discrete(numPokemon + 1) # which pokemon BUB can switch to
 })
