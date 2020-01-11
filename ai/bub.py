@@ -1,20 +1,20 @@
 import sys
 import json
-import asyncio
+# import asyncio
 
 
 if __name__ == "__main__":
     while True:
         msg = json.loads(input())
-        print("bub: " + msg)
+        # do something with the message
 		
 
 #####################################################
 # example async function?
-async def get_state_loop(client, url):
-	while True:
-	    msg = await json.loads(input())
-        print("bub: " + msg)
-	return
+# async def get_state_loop(client, url):
+# 	while True:
+# 	    msg = await json.loads(input())
+#         # do
+# 	return
 		
-asyncio.run(get_state_loop())
+# asyncio.run(get_state_loop())
