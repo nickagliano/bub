@@ -80,14 +80,8 @@ observation_space = spaces.Dict({
 
 ### POTENTIAL ACTION SPACES ..... ? ###
 
-# action space made with boxes
+# action space made with multibinary (1 = can use that move/can switch to that poke, orders correspond with MoveArray and PokemonArray)
 action_space = spaces.Dict({
-	moveActionsBox = spaces.Box(low=0, high=1, shape(numMoves + 1, 1), dtype=np.bool), # which moves BUB can use
-	switchActionsBox = spaces.Box(low=0, high=1, shape(numPokemon + 1, 1), dtype=np.bool) # which pokemon BUB can switch to
-})
-
-# action space made with discretes
-action_space = spaces.Dict({
-	moveActionsDiscrete = spaces.Discrete(numMoves + 1), # which moves BUB can choose
-	switchActionsDiscrete = spaces.Discrete(numPokemon + 1) # which pokemon BUB can switch to
+	"moveActionsDiscrete": spaces.MultiBinary(numMoves), # which moves BUB can choose
+	"switchActionsDiscrete": spaces.MultiBinary(numPokemon) # which pokemon BUB can switch to
 })
