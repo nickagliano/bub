@@ -31,76 +31,257 @@ class Pokemon(gym.Env):
 		self.add = [0, 0]
 		self.reward = 0
 
-	# the check function isn't actually required
-	# used to check if a certain condition has been met
-	# for tictactoe, it's used to see if someone has won 
-	def check(self):
-		if(self.counter<5):
-			return 0
-		for i in range(3):
-			if(self.state[i][0] != "-" and self.state[i][1] == self.state[i][0] and self.state[i][1] == self.state[i][2]):
-				if(self.state[i][0] == "o"):
-					return 1
-				else:
-					return 2
-			if(self.state[0][i] != "-" and self.state[1][i] == self.state[0][i] and self.state[1][i] == self.state[2][i]):
-				if(self.state[0][i] == "o"):
-					return 1
-				else:
-					return 2
-		if(self.state[0][0] != "-" and self.state[1][1] == self.state[0][0] and self.state[1][1] == self.state[2][2]):
-			if(self.state[0][0] == "o"):
-				return 1
-			else:
-				return 2
-		if(self.state[0][2] != "-" and self.state[0][2] == self.state[1][1] and self.state[1][1] == self.state[2][0]):
-			if(self.state[1][1] == "o"):
-				return 1
-			else:
-				return 2
+		self.action_space = spaces.Dict({
+			"moveActionsDiscrete": spaces.MultiBinary(NUM_MOVES), # which moves BUB can choose
+			"switchActionsDiscrete": spaces.MultiBinary(NUM_POKEMON) # which pokemon BUB can switch to
+		})
+
+		self.observation_space = spaces.Dict({
+			"mySide": spaces.Dict({
+				"stealthRocks": spaces.MultiBinary(1),
+				"stickyWeb": spaces.MultiBinary(1),
+				"spikesLevel": spaces.Discrete(4),
+				"toxicSpikesLevel": spaces.Discrete(3),
+				"lightScreen": spaces.Discrete(9), # 0-8 turns remaining
+				"reflect": spaces.Discrete(9),
+				"auroraVeil": spaces.Discrete(9),
+				"tailwind": spaces.Discrete(6),
+				"activePokemon": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke1": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke2": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke3": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke4": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke5": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke6": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+			}),
+			"oppSide": spaces.Dict({
+				"stealthRocks": spaces.MultiBinary(1),
+				"stickyWeb": spaces.MultiBinary(1),
+				"spikesLevel": spaces.Discrete(4),
+				"toxicSpikesLevel": spaces.Discrete(3),
+				"lightScreen": spaces.Discrete(9), # 0-8 turns remaining
+				"reflect": spaces.Discrete(9),
+				"auroraVeil": spaces.Discrete(9),
+				"tailwind": spaces.Discrete(6),
+				"activePokemon": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke1": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke2": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke3": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke4": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke5": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+				"poke6": spaces.Dict({
+					"num": spaces.Discrete(NUM_POKEMON + 1), # 0 is none
+					"knownMoves": spaces.MultiDiscrete([ NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1, NUM_MOVES+1 ]), # 0 is unknown/none
+					"possibleMoves": spaces.MultiBinary(NUM_MOVES),
+					"types": spaces.MultiBinary(NUM_TYPES), # or multidiscrete ?
+					"nonVolatileStatus": spaces.Discrete(NUM_NON_VOLATIVE_STATUSES),
+					"volatileStatus": spaces.MultiBinary(NUM_VOLATILE_STATUSES),
+					"baseStats": spaces.Box(low=0, high=np.inf, shape=(6,1), dtype=np.int32), # hp, atk, def, spa, spd, spe
+					"battleStats": spaces.Box(low=0, high=np.inf, shape=(8,1), dtype=np.int32), # + acc, eva
+					"item": spaces.Discrete(NUM_ITEMS + 1),
+					"itemConsumed": spaces.MultiBinary(1),
+					"knownAbility": spaces.Discrete(NUM_ABILITIES), # 0 is unknown/none, included in AbilityArray so no +1
+					"possibleAbilities": spaces.MultiBinary(NUM_ABILITIES) # or multidiscrete ?
+				}),
+			}),
+			"weather": spaces.Discrete(5), # 0 is none
+			"terrain": spaces.Discrete(5), # 0 is none
+			"turn": spaces.Box(min=1, max=np.inf, shape=(1,1), dtype=np.int32)
+		})
 				
 
 	# At each step we will take the specified action (chosen by our model), 
 	#     calculate the reward, and return the next observation.
-	def step(self, target):
+	def step(self, action):
 		if self.done == 1:
 			print("Game Over")
-			return [self.state, self.reward, self.done, self.add]
-		elif self.state[int(target/3)][target%3] != "-":
-			print("Invalid Step")
-			return [self.state, self.reward, self.done, self.add]
-		else:
-			if(self.counter%2 == 0):
-				self.state[int(target/3)][target%3] = "o"
-			else:
-				self.state[int(target/3)][target%3] = "x"
-			self.counter += 1
-			if(self.counter == 9):
-				self.done = 1;
-			self.render()
+			return [self.state, self.reward, self.done]
 
-		win = self.check()
-		if(win):
-			self.done = 1;
-			print("Player ", win, " wins.", sep = "", end = "\n")
-			self.add[win-1] = 1;
-			if win == 1:
-				self.reward = 100
-			else:
-				self.reward = -100
+		self.counter += 1
 
-		return [self.state, self.reward, self.done, self.add]
+		# modify self.state, self.reward, self.done, 
+
+		# select something to do
+		# wait for turn to complete
+		# get the new state
+
+		return [self.state, self.reward, self.done]
 		
 		
 	# called any time a new environment is created, or to reset an existing environment’s state
 	# here we set the team available to BUB, all the info we have about his opponents team, etc.
 	def reset(self):
-		for i in range(3):
-			for j in range(3):
-				self.state[i][j] = "-"
 		self.counter = 0
 		self.done = 0
-		self.add = [0, 0]
 		self.reward = 0
 		return self.state
 		
@@ -108,7 +289,4 @@ class Pokemon(gym.Env):
 	# For tictactoe this is just updating the board, but for BUB we could do 
 	#     some cool things to visualize his little brain
 	def render(self):
-		for i in range(3):
-			for j in range(3):
-				print(self.state[i][j], end = " ")
-			print("")
+		pass
