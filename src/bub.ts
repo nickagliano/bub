@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import Client from "./client";
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
+import { StreamReader } from "./streamreader";
 
 const readline = require('readline').createInterface({
     input: process.stdin,
@@ -29,8 +30,19 @@ catch (e)
     }
 }
 
+function handleBubTalk(data: string)
+{
+    // move|9403
+    // switch|434
+    // chat|jefiowjifeow
+
+    const actionType = data.split("|")[0];
+    const actionNum = parseInt(data.split("|")[1]);
+}
+
 const config = JSON.parse(configStr);
 const client = new Client(config, init);
+const reader = new StreamReader("/", handleBubTalk);
 
 function init()
 {
@@ -38,7 +50,7 @@ function init()
     bub = spawn("python", ["ai/bub.py"]);
     bub.stdin.setDefaultEncoding("utf8");
     bub.stdout.pipe(process.stdout);
-    writeToBub("sup");
+    bub.stdout.addListener("data", reader.readChunk);
     bub.stdin.end();
 
     readline.on("line", (input) =>
