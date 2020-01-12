@@ -1,4 +1,3 @@
-import { fillArray } from "./utils";
 import BattlePokedex from "./data/pokedex";
 import ItemArray from "./data/itemarray";
 import AbilityArray from "./data/abilityarray";
@@ -68,10 +67,10 @@ const DefaultPokemon: BUBStatePokeData = {
     knownMoves: [ 0, 0, 0, 0 ],
     nonVolatileStatus: 0,
     num: 0,
-    possibleAbilities: fillArray(0, NUM_ABILITIES),
-    possibleMoves: fillArray(0, NUM_MOVES),
-    types: fillArray(0, NUM_TYPES),
-    volatileStatus: fillArray(0, NUM_VOLATILE_STATUSES)
+    possibleAbilities: Array(0).fill(NUM_ABILITIES),
+    possibleMoves: Array(0).fill(NUM_MOVES),
+    types: Array(0).fill(NUM_TYPES),
+    volatileStatus: Array(0).fill(NUM_VOLATILE_STATUSES)
 };
 
 /**
@@ -87,7 +86,7 @@ function cleanPokeName(name: string)
 
     for (const char of name)
     {
-        if (allowed.indexOf(char) !== -1)
+        if (allowed.includes(char))
         {
             ret += char;
         }
@@ -125,7 +124,7 @@ function zeroIfNotFound(index: number)
 
 function learnedBitfield(array: any[], valuesKnown: any[]): (0 | 1)[]
 {
-    const arr = fillArray(0, array.length);
+    const arr = Array(0).fill(array.length);
     for (const valueKnown of valuesKnown)
     {
         const index = array.indexOf(valueKnown);
@@ -174,13 +173,13 @@ export default class StateBuilder
                 item: 0,
                 itemConsumed: 0,
                 knownAbility: 0,
-                knownMoves: fillArray(0, NUM_MOVES),
+                knownMoves: Array(0).fill(NUM_MOVES),
                 nonVolatileStatus: 0,
                 num: zeroIfNotFound(PokemonArray.indexOf(cleanName)),
                 possibleAbilities: learnedBitfield(AbilityArray, obj_values(BattlePokedex[cleanName].abilities).map(a => a.toLowerCase())),
                 possibleMoves: learnedBitfield(MoveArray, obj_keys(BattleLearnsets[cleanName].learnset)),
                 types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(t => t.toLowerCase())),
-                volatileStatus: fillArray(0, NUM_VOLATILE_STATUSES)
+                volatileStatus: Array(0).fill(NUM_VOLATILE_STATUSES)
             } as BUBStatePokeData;
         }
     }
@@ -216,7 +215,7 @@ export default class StateBuilder
                 possibleAbilities: learnedBitfield(AbilityArray, obj_values(BattlePokedex[cleanName].abilities).map(a => a.toLowerCase())),
                 possibleMoves: learnedBitfield(MoveArray, obj_keys(BattleLearnsets[cleanName].learnset)),
                 types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(t => t.toLowerCase())),
-                volatileStatus: fillArray(0, NUM_VOLATILE_STATUSES)
+                volatileStatus: Array(0).fill(NUM_VOLATILE_STATUSES)
             }
         };
 
