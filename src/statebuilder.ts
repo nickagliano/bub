@@ -80,7 +80,7 @@ const DefaultPokemon: BUBStatePokeData = {
  */
 function cleanPokeName(name: string)
 {
-    const allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    const allowed = "abcdefghijklmnopqrstuvwxyz1234567890";
     let ret = "";
 
     name = name.toLowerCase();
