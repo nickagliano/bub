@@ -206,6 +206,21 @@ export default class Client
 
                 break;
             }
+            case "poke":
+            {
+                this.stateBuilder.parsePoke(tokens[1] as "p1" | "p2", tokens[2]);
+                break;
+            }
+            case "clearpoke":
+            {
+                this.stateBuilder.clearPoke();
+                break;
+            }
+            case "teampreview":
+            {
+                
+                break;
+            }
         }
     }
 }
