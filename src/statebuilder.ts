@@ -1,10 +1,11 @@
 import { fillArray } from "./utils";
-import BattlePokedex from "./pokedex";
-import ItemArray from "./itemarray";
-import AbilityArray from "./abilityarray";
-import MoveArray from "./movearray";
-import PokemonArray from "./pokemonarray";
+import BattlePokedex from "./data/pokedex";
+import ItemArray from "./data/itemarray";
+import AbilityArray from "./data/abilityarray";
+import MoveArray from "./data/movearray";
+import PokemonArray from "./data/pokemonarray";
 import BattleLearnsets from "./learnset";
+import TypeArray from "./data/typearray";
 
 const NUM_MOVES = 821;
 const NUM_NON_VOLATIVE_STATUSES = 7;
@@ -72,8 +73,6 @@ const DefaultPokemon: BUBStatePokeData = {
     types: fillArray(0, NUM_TYPES),
     volatileStatus: fillArray(0, NUM_VOLATILE_STATUSES)
 };
-
-const TypeArray = [ "normal", "fire", "fighting", "water", "flying", "grass", "poison", "electric", "ground", "psychic", "rock", "ice", "bug", "dragon", "ghost", "dark", "steel", "fairy" ];
 
 /**
  * @returns Pokemon's name without spaces, etc, for use with BattlePokedex

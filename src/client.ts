@@ -4,7 +4,7 @@ import * as WebSocket from "ws";
 import * as https from "https";
 import * as fs from "fs";
 import * as url from "url";
-import { Config } from "./types";
+import { Config } from "./datatypes";
 import StateBuilder from "./statebuilder";
 
 export default class Client
