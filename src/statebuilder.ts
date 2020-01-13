@@ -1,18 +1,4 @@
-import BattlePokedex from "./data/pokedex";
-import ItemArray from "./data/itemarray";
-import AbilityArray from "./data/abilityarray";
-import MoveArray from "./data/movearray";
-import PokemonArray from "./data/pokemonarray";
-import BattleLearnsets from "./learnset";
-import TypeArray from "./data/typearray";
-
-const NUM_MOVES = 821;
-const NUM_NON_VOLATIVE_STATUSES = 7;
-const NUM_VOLATILE_STATUSES = 57;
-const NUM_TYPES = 18;
-const NUM_ITEMS = 413;
-const NUM_ABILITIES = 261;
-const NUM_POKEMON = 1198;
+import { NUM_MOVES, NUM_ABILITIES, NUM_TYPES, NUM_VOLATILE_STATUSES, BattlePokedex, PokemonArray, AbilityArray, MoveArray, BattleLearnsets, TypeArray, ItemArray } from "./data/data";
 
 export type TranslatedBubState = number[];
 

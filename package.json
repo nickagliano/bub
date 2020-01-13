@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:watch": "npx tsc --watch",
-    "start": "node dist/bub.js"
+    "start": "node dist/bub.js",
+    "fetchdata": "node tools/fetchdata.js"
   },
   "repository": {
     "type": "git",

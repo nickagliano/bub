@@ -1,6 +1,7 @@
-dist
-node_modules
+/dist
+/node_modules
 bub.json
 log.txt
-ai/venv
+/ai/venv
 **/test.*
+/data
