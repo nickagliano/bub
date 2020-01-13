@@ -26,13 +26,13 @@ def MultiDiscrete(minInc, maxInc, n):
 
 POKE_DICT = dict(
 	num=Discrete(0, NUM_POKEMON + 1), # 0 is none
-	knownMoves=MultiDiscrete(0, NUM_MOVES + 1, 4), # 0 is unknown/none
+	knownMoves=Bitfield(NUM_MOVES), # 0 is unknown/none
 	possibleMoves=Bitfield(NUM_MOVES),
 	types=Bitfield(NUM_TYPES), # or multidiscrete ?
 	nonVolatileStatus=Discrete(0, NUM_NON_VOLATIVE_STATUSES),
 	volatileStatus=Bitfield(NUM_VOLATILE_STATUSES),
 	baseStats=MultiDiscrete(0, 255, 6), # hp, atk, def, spa, spd, spe
-	battleStats=MultiDiscrete(0, 999999999, 6), # + acc, eva
+	battleStats=MultiDiscrete(0, 999999999, 8), # + acc, eva
 	item=Discrete(0, NUM_ITEMS + 1),
 	itemConsumed=Boolean,
 	knownAbility=Discrete(0, NUM_ABILITIES + 1), # 0 is unknown/none
@@ -111,13 +111,13 @@ class Pokemon(gym.Env):
 
 		self.action_space = spaces.MultiBinary(NUM_MOVES + NUM_POKEMON);
 		self.observation_space = make_observation_space()
-		print(self.observation_space)
+		# print(self.observation_space)
 
 	# At each step we will take the specified action (chosen by our model), 
 	#     calculate the reward, and return the next observation.
 	def step(self, action):
 		if self.done == 1:
-			print("Game Over")
+			# print("Game Over")
 			return [self.state, self.reward, self.done]
 
 		self.counter += 1

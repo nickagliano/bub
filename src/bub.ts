@@ -12,7 +12,7 @@ let bub: ChildProcessWithoutNullStreams;
 
 function writeToBub(str: string)
 {
-    console.log("writing to bub: ", str);
+    //console.log("writing to bub: ", str);
     bub.stdin.write(str.trim() + "\n");
 }
 
@@ -67,7 +67,6 @@ function init()
 
     readline.on("line", (input) =>
     {
-        console.log("sending: " + input);
         client.write(input);
     });
 }

@@ -72,7 +72,7 @@ export default class Client
 
     public write(message: string): void
     {
-        console.log("sending: " + message);
+        console.log("sending to showdown: " + message);
         this.socket.send(message);
     }
 

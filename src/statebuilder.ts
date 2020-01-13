@@ -19,7 +19,7 @@ export type TranslatedBubState = number[];
 export interface BUBStatePokeData
 {
     num: number;
-    knownMoves: number[];
+    knownMoves: (0 | 1)[];
     possibleMoves: (0 | 1)[];
     types: (0 | 1)[];
     nonVolatileStatus: number;
@@ -67,7 +67,7 @@ const DefaultPokemon: BUBStatePokeData = {
     item: 0,
     itemConsumed: 0,
     knownAbility: 0,
-    knownMoves: [ 0, 0, 0, 0 ],
+    knownMoves: Array(NUM_MOVES).fill(0),
     nonVolatileStatus: 0,
     possibleAbilities: Array(NUM_ABILITIES).fill(0),
     possibleMoves: Array(NUM_MOVES).fill(0),
@@ -126,11 +126,11 @@ function zeroIfNotFound(index: number)
 
 function learnedBitfield(array: any[], valuesKnown: any[]): (0 | 1)[]
 {
-    const arr = Array(array.length).fill(0);
+    const arr = Array(array.length - 1).fill(0);
     for (const valueKnown of valuesKnown)
     {
-        const index = array.indexOf(valueKnown);
-        if (index !== -1)
+        const index = array.indexOf(valueKnown) - 1;
+        if (index >= 0)
         {
             arr[index] = 1;
         }
@@ -141,7 +141,7 @@ function learnedBitfield(array: any[], valuesKnown: any[]): (0 | 1)[]
 
 function unpackPokemon(poke: BUBStatePokeData): number[]
 {
-    return [
+    const ret = [
         poke.num,
         ...poke.knownMoves,
         ...poke.possibleMoves,
@@ -155,11 +155,13 @@ function unpackPokemon(poke: BUBStatePokeData): number[]
         poke.knownAbility,
         ...poke.possibleAbilities
     ];
+
+    return ret;
 }
 
 function unpackSide(side: BUBStateBattleSide): number[]
 {
-    return [
+    const ret = [
         side.stealthRocks,
         side.stickyWeb,
         side.spikesLevel,
@@ -176,6 +178,8 @@ function unpackSide(side: BUBStateBattleSide): number[]
         ...unpackPokemon(side.poke5),
         ...unpackPokemon(side.poke6),
     ];
+
+    return ret;
 }
 
 export default class StateBuilder
@@ -186,18 +190,20 @@ export default class StateBuilder
 
     constructor()
     {
-
+        // 26373
     }
 
     public getState(): TranslatedBubState
     {
-        return [
+        const ret = [
             ...unpackSide(this.state.mySide),
             ...unpackSide(this.state.oppSide),
             this.state.weather,
             this.state.terrain,
             this.state.turn
         ];
+
+        return ret;
     }
 
     parsePoke(side: "p1" | "p2", details: string)
