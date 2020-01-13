@@ -3,15 +3,21 @@
 import gym
 from gym import spaces
 import numpy as np
+import json
+
+def getLen(name):
+	with open("data/" + name + ".json") as content_file:
+		content = content_file.read()
+	return len(json.loads(content)) - 1
 
 # declare constants
-NUM_MOVES = 821
+NUM_MOVES = getLen("movearray")
 NUM_NON_VOLATIVE_STATUSES = 7
-NUM_VOLATILE_STATUSES = 57
-NUM_TYPES = 18
-NUM_ITEMS = 413
-NUM_ABILITIES = 261
-NUM_POKEMON = 1198
+NUM_VOLATILE_STATUSES = getLen("volatilestatusarray")
+NUM_TYPES = getLen("typearray")
+NUM_ITEMS = getLen("itemarray")
+NUM_ABILITIES = getLen("abilityarray")
+NUM_POKEMON = getLen("pokemonarray")
 
 Boolean = (0,1,1)
 
@@ -108,6 +114,8 @@ class Pokemon(gym.Env):
 		self.done = 0
 		self.add = [0, 0]
 		self.reward = 0
+
+		print(NUM_POKEMON)
 
 		self.action_space = spaces.MultiBinary(NUM_MOVES + NUM_POKEMON);
 		self.observation_space = make_observation_space()

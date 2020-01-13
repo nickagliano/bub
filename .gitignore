@@ -5,3 +5,4 @@ log.txt
 /ai/venv
 **/test.*
 /data
+__pycache__
