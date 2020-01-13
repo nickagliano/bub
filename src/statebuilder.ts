@@ -11,8 +11,10 @@ const NUM_NON_VOLATIVE_STATUSES = 7;
 const NUM_VOLATILE_STATUSES = 57;
 const NUM_TYPES = 18;
 const NUM_ITEMS = 413;
-const NUM_ABILITIES = 262;
+const NUM_ABILITIES = 261;
 const NUM_POKEMON = 1198;
+
+export type TranslatedBubState = number[];
 
 export interface BUBStatePokeData
 {
@@ -32,13 +34,6 @@ export interface BUBStatePokeData
 
 export interface BUBStateBattleSide
 {
-    activePokemon: BUBStatePokeData;
-    poke1: BUBStatePokeData;
-    poke2: BUBStatePokeData;
-    poke3: BUBStatePokeData;
-    poke4: BUBStatePokeData;
-    poke5: BUBStatePokeData;
-    poke6: BUBStatePokeData;
     stealthRocks: (0 | 1);
     stickyWeb: (0 | 1);
     spikesLevel: number;
@@ -47,6 +42,13 @@ export interface BUBStateBattleSide
     reflect: number;
     auroraVeil: number;
     tailwind: number;
+    activePokemon: BUBStatePokeData;
+    poke1: BUBStatePokeData;
+    poke2: BUBStatePokeData;
+    poke3: BUBStatePokeData;
+    poke4: BUBStatePokeData;
+    poke5: BUBStatePokeData;
+    poke6: BUBStatePokeData;
 }
 
 export interface BUBState
@@ -59,6 +61,7 @@ export interface BUBState
 }
 
 const DefaultPokemon: BUBStatePokeData = {
+    num: 0,
     baseStats: [ 0, 0, 0, 0, 0, 0 ],
     battleStats: [ 0, 0, 0, 0, 0, 0, 0, 0 ],
     item: 0,
@@ -66,11 +69,10 @@ const DefaultPokemon: BUBStatePokeData = {
     knownAbility: 0,
     knownMoves: [ 0, 0, 0, 0 ],
     nonVolatileStatus: 0,
-    num: 0,
-    possibleAbilities: Array(0).fill(NUM_ABILITIES),
-    possibleMoves: Array(0).fill(NUM_MOVES),
-    types: Array(0).fill(NUM_TYPES),
-    volatileStatus: Array(0).fill(NUM_VOLATILE_STATUSES)
+    possibleAbilities: Array(NUM_ABILITIES).fill(0),
+    possibleMoves: Array(NUM_MOVES).fill(0),
+    types: Array(NUM_TYPES).fill(0),
+    volatileStatus: Array(NUM_VOLATILE_STATUSES).fill(0)
 };
 
 /**
@@ -124,7 +126,7 @@ function zeroIfNotFound(index: number)
 
 function learnedBitfield(array: any[], valuesKnown: any[]): (0 | 1)[]
 {
-    const arr = Array(0).fill(array.length);
+    const arr = Array(array.length).fill(0);
     for (const valueKnown of valuesKnown)
     {
         const index = array.indexOf(valueKnown);
@@ -137,6 +139,45 @@ function learnedBitfield(array: any[], valuesKnown: any[]): (0 | 1)[]
     return arr;
 };
 
+function unpackPokemon(poke: BUBStatePokeData): number[]
+{
+    return [
+        poke.num,
+        ...poke.knownMoves,
+        ...poke.possibleMoves,
+        ...poke.types,
+        poke.nonVolatileStatus,
+        ...poke.volatileStatus,
+        ...poke.baseStats,
+        ...poke.battleStats,
+        poke.item,
+        poke.itemConsumed,
+        poke.knownAbility,
+        ...poke.possibleAbilities
+    ];
+}
+
+function unpackSide(side: BUBStateBattleSide): number[]
+{
+    return [
+        side.stealthRocks,
+        side.stickyWeb,
+        side.spikesLevel,
+        side.toxicSpikesLevel,
+        side.lightScreen,
+        side.reflect,
+        side.auroraVeil,
+        side.tailwind,
+        ...unpackPokemon(side.activePokemon),
+        ...unpackPokemon(side.poke1),
+        ...unpackPokemon(side.poke2),
+        ...unpackPokemon(side.poke3),
+        ...unpackPokemon(side.poke4),
+        ...unpackPokemon(side.poke5),
+        ...unpackPokemon(side.poke6),
+    ];
+}
+
 export default class StateBuilder
 {
     private state: BUBState;
@@ -148,9 +189,15 @@ export default class StateBuilder
 
     }
 
-    public getState(): BUBState
+    public getState(): TranslatedBubState
     {
-        return this.state;
+        return [
+            ...unpackSide(this.state.mySide),
+            ...unpackSide(this.state.oppSide),
+            this.state.weather,
+            this.state.terrain,
+            this.state.turn
+        ];
     }
 
     parsePoke(side: "p1" | "p2", details: string)
@@ -173,13 +220,13 @@ export default class StateBuilder
                 item: 0,
                 itemConsumed: 0,
                 knownAbility: 0,
-                knownMoves: Array(0).fill(NUM_MOVES),
+                knownMoves: Array(NUM_MOVES).fill(0),
                 nonVolatileStatus: 0,
                 num: zeroIfNotFound(PokemonArray.indexOf(cleanName)),
                 possibleAbilities: learnedBitfield(AbilityArray, obj_values(BattlePokedex[cleanName].abilities).map(a => a.toLowerCase())),
                 possibleMoves: learnedBitfield(MoveArray, obj_keys(BattleLearnsets[cleanName].learnset)),
                 types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(t => t.toLowerCase())),
-                volatileStatus: Array(0).fill(NUM_VOLATILE_STATUSES)
+                volatileStatus: Array(NUM_VOLATILE_STATUSES).fill(0)
             } as BUBStatePokeData;
         }
     }
@@ -196,7 +243,7 @@ export default class StateBuilder
         const poke = (index: number): BUBStatePokeData =>
         {
             const p = side.pokemon[index];
-            const cleanName = cleanPokeName(p.name.split(",")[0]);
+            const cleanName = cleanPokeName(p.details.split(",")[0]);
 
             return {
                 baseStats: obj_values(BattlePokedex[cleanName].baseStats),
@@ -215,7 +262,7 @@ export default class StateBuilder
                 possibleAbilities: learnedBitfield(AbilityArray, obj_values(BattlePokedex[cleanName].abilities).map(a => a.toLowerCase())),
                 possibleMoves: learnedBitfield(MoveArray, obj_keys(BattleLearnsets[cleanName].learnset)),
                 types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(t => t.toLowerCase())),
-                volatileStatus: Array(0).fill(NUM_VOLATILE_STATUSES)
+                volatileStatus: Array(NUM_VOLATILE_STATUSES).fill(0)
             }
         };
 

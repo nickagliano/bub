@@ -10,9 +10,10 @@ const readline = require('readline').createInterface({
 
 let bub: ChildProcessWithoutNullStreams;
 
-function writeToBub(obj: any)
+function writeToBub(str: string)
 {
-    bub.stdin.write(JSON.stringify(obj));
+    console.log("writing to bub: ", str);
+    bub.stdin.write(str.trim() + "\n");
 }
 
 let configStr: string;
@@ -34,15 +35,25 @@ function handleBubTalk(data: string)
 {
     // move|9403
     // switch|434
-    // chat|jefiowjifeow
+    // chat|jefiowjifeo
+    // debug|whatever
 
     const actionType = data.split("|")[0];
-    const actionNum = parseInt(data.split("|")[1]);
+    const actionData = data.split("|")[1];
+
+    switch (actionType)
+    {
+        case "debug":
+        {
+            console.log("bub debug: " + actionData)
+            break;
+        }
+    }
 }
 
 const config = JSON.parse(configStr);
-const client = new Client(config, init);
-const reader = new StreamReader("/", handleBubTalk);
+const client = new Client(config, init, writeToBub);
+const reader = new StreamReader("//////", handleBubTalk);
 
 function init()
 {
@@ -50,8 +61,9 @@ function init()
     bub = spawn("python", ["ai/bub.py"]);
     bub.stdin.setDefaultEncoding("utf8");
     bub.stdout.pipe(process.stdout);
+    bub.stderr.pipe(process.stderr);
     bub.stdout.addListener("data", reader.readChunk);
-    bub.stdin.end();
+    //bub.stdin.end();
 
     readline.on("line", (input) =>
     {

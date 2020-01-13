@@ -5,7 +5,7 @@ import * as https from "https";
 import * as fs from "fs";
 import * as url from "url";
 import { Config } from "./datatypes";
-import StateBuilder from "./statebuilder";
+import StateBuilder, { BUBState, TranslatedBubState } from "./statebuilder";
 
 export default class Client
 {
@@ -22,7 +22,7 @@ export default class Client
     private logStream: fs.WriteStream;
     private stateBuilder: StateBuilder;
 
-    constructor(config: Config, onconnect: () => any)
+    constructor(config: Config, onconnect: () => any, private writeToBub: (obj: string) => any)
     {
         // set up statebuilder //
         this.stateBuilder = new StateBuilder();
@@ -218,7 +218,7 @@ export default class Client
             }
             case "teampreview":
             {
-                
+                this.writeToBub(this.stateBuilder.getState().join(","));
                 break;
             }
         }
