@@ -12,5 +12,6 @@ this should have the following format:
 ```
 then u can do the following:
 * run `npm install`
+* run `npm run fetchdata` to fetch pokemon/move/ability/etc data that bub requires
 * run `npm run build:watch` in one terminal (will build and watch for changes)
 * run `npm start` in another terminal to actually start B.U.B.
