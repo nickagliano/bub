@@ -62,10 +62,10 @@ const DefaultPokemon: BUBStatePokeData = {
 };
 
 /**
- * @returns Pokemon's name without spaces, etc, for use with BattlePokedex
- * @param name Name of the pokemon
+ * @returns Pokemon/ability/move/etc name without spaces, etc, for use with the data arrays n such
+ * @param name Name of the pokemon/move/whatever
  */
-function cleanPokeName(name: string)
+function formatName(name: string)
 {
     const allowed = "abcdefghijklmnopqrstuvwxyz1234567890";
     let ret = "";
@@ -83,28 +83,6 @@ function cleanPokeName(name: string)
     return ret;
 }
 
-function obj_values(obj: Record<string, any>): any[]
-{
-    const ret = [];
-    for (const key in obj)
-    {
-        ret.push(obj[key]);
-    }
-
-    return ret;
-};
-
-function obj_keys(obj: Record<string, any>): string[]
-{
-    const ret = [];
-    for (const key in obj)
-    {
-        ret.push(key);
-    }
-
-    return ret;
-};
-
 function zeroIfNotFound(index: number)
 {
     return index === -1 ? 0 : index;
@@ -112,17 +90,17 @@ function zeroIfNotFound(index: number)
 
 function learnedBitfield(array: any[], valuesKnown: any[]): (0 | 1)[]
 {
-    const arr = Array(array.length - 1).fill(0);
+    const bitfield = Array(array.length - 1).fill(0); // - 1 since array includes nopokemon/nomove/etc
     for (const valueKnown of valuesKnown)
     {
         const index = array.indexOf(valueKnown) - 1;
         if (index >= 0)
         {
-            arr[index] = 1;
+            bitfield[index] = 1;
         }
     }
 
-    return arr;
+    return bitfield;
 };
 
 function unpackPokemon(poke: BUBStatePokeData): number[]
@@ -196,9 +174,9 @@ export default class StateBuilder
     {
         if (side !== this.side)
         {
-            const cleanName = cleanPokeName(details.split(",")[0]);
+            const cleanName = formatName(details.split(",")[0]);
             this.state.oppSide["poke" + (++this.pokeCounter).toString()] = {
-                baseStats: obj_values(BattlePokedex[cleanName].baseStats),
+                baseStats: Object.values(BattlePokedex[cleanName].baseStats),
                 battleStats: [
                     1,
                     1,
@@ -215,9 +193,9 @@ export default class StateBuilder
                 knownMoves: Array(NUM_MOVES).fill(0),
                 nonVolatileStatus: 0,
                 num: zeroIfNotFound(PokemonArray.indexOf(cleanName)),
-                possibleAbilities: learnedBitfield(AbilityArray, obj_values(BattlePokedex[cleanName].abilities).map(a => a.toLowerCase())),
-                possibleMoves: learnedBitfield(MoveArray, obj_keys(BattleLearnsets[cleanName].learnset)),
-                types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(t => t.toLowerCase())),
+                possibleAbilities: learnedBitfield(AbilityArray, Object.values(BattlePokedex[cleanName].abilities).map(formatName)),
+                possibleMoves: learnedBitfield(MoveArray, Object.keys(BattleLearnsets[cleanName].learnset)),
+                types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(formatName)),
                 volatileStatus: Array(NUM_VOLATILE_STATUSES).fill(0)
             } as BUBStatePokeData;
         }
@@ -235,13 +213,13 @@ export default class StateBuilder
         const poke = (index: number): BUBStatePokeData =>
         {
             const p = side.pokemon[index];
-            const cleanName = cleanPokeName(p.details.split(",")[0]);
+            const cleanName = formatName(p.details.split(",")[0]);
 
             return {
-                baseStats: obj_values(BattlePokedex[cleanName].baseStats),
+                baseStats: Object.values(BattlePokedex[cleanName].baseStats),
                 battleStats: [
                     p.condition.split("/")[0],
-                    ...obj_values(p.stats),
+                    ...Object.values(p.stats),
                     1,
                     1
                 ],
@@ -251,9 +229,9 @@ export default class StateBuilder
                 knownMoves: learnedBitfield(MoveArray, p.moves),
                 nonVolatileStatus: 0,
                 num: zeroIfNotFound(PokemonArray.indexOf(cleanName)),
-                possibleAbilities: learnedBitfield(AbilityArray, obj_values(BattlePokedex[cleanName].abilities).map(a => a.toLowerCase())),
-                possibleMoves: learnedBitfield(MoveArray, obj_keys(BattleLearnsets[cleanName].learnset)),
-                types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(t => t.toLowerCase())),
+                possibleAbilities: learnedBitfield(AbilityArray, Object.values(BattlePokedex[cleanName].abilities).map(formatName)),
+                possibleMoves: learnedBitfield(MoveArray, Object.keys(BattleLearnsets[cleanName].learnset)),
+                types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(formatName)),
                 volatileStatus: Array(NUM_VOLATILE_STATUSES).fill(0)
             }
         };
