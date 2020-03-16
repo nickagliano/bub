@@ -68,12 +68,11 @@ class DQNAgent():
         self.sess.run(tf.global_variables_initializer())
         
     def get_action(self, state):
-		# interpret state to find out what possible actions there are
-		
         q_state = self.q_network.get_q_state(self.sess, [state])
         action_greedy = np.argmax(q_state)
         action_random = np.random.randint(self.action_size)
         action = action_random if random.random() < self.eps else action_greedy
+        print("debug|from get_action: " + str(action))
         return action
     
     def train(self, state, action, next_state, reward, done):
@@ -96,13 +95,14 @@ if __name__ == "__main__":
     while True:
         msg = input()
         # we expect a string of numbers separated by commas to turn into our state #
-        state = env.reset(list(map(int, msg.split(","))))
+        state = env.reset(list(map(int, msg.split("|")[1].split(","))))
 		
         total_reward = 0
         done = False
         while not done:
             action = agent.get_action(state)
-            next_state, reward, done, info = env.step(action)
+            # next_state, reward, done, info = env.step(action)
+            next_state, reward, done = env.step(action)
             agent.train(state, action, next_state, reward, done)
             env.render()
             total_reward += reward

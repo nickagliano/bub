@@ -21,6 +21,7 @@ export default class Client
     private receivedAck = false;
     private logStream: fs.WriteStream;
     private stateBuilder: StateBuilder;
+	private roomId: string = "";
 
     constructor(config: Config, onconnect: () => any, private writeToBub: (obj: string) => any)
     {
@@ -75,6 +76,12 @@ export default class Client
         console.log("sending to showdown: " + message);
         this.socket.send(message);
     }
+	
+	public writeToCurrentRoom(message: string): void
+	{
+		console.log("sending to showdown: " + message);
+		this.socket.send(this.roomId + message);
+	}
 
     public findBattle(): void
     {
@@ -182,11 +189,12 @@ export default class Client
     
                     if (data.teamPreview)
                     {
+						this.roomId = roomId;
 						this.stateBuilder.parseFirstRequest(data);
                     }
                     else if (data.forceSwitch)
                     {
-						this.writeToBub(this.stateBuilder.getState().join(","));
+						this.writeToBub("state|" + this.stateBuilder.getState().join(","));
 						
                         // switch //
                         // const pokemon = data.side.pokemon;
@@ -196,7 +204,7 @@ export default class Client
                     else if (data.active)
                     {
                         console.log("sending state to lil bub")
-                        this.writeToBub(this.stateBuilder.getState().join(","));
+                        this.writeToBub("state|" + this.stateBuilder.getState().join(","));
                         // pick move //
                         // const numMoves = data.active[0].moves.length;
                         // const pick = Math.floor(Math.random() * numMoves) + 1;
@@ -225,6 +233,12 @@ export default class Client
 				this.write(roomId + "|/team 123456");
                 break;
             }
+			case "error":
+			{
+				if (tokens[1].startsWith("[Invalid choice]")) {
+					this.writeToBub("error|poo")
+				}
+			}
         }
     }
 }

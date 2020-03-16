@@ -50,6 +50,17 @@ function handleBubTalk(data: string)
             console.log("bub debug: " + actionData)
             break;
         }
+		case "action":
+		{
+			const choice = parseInt(actionData);
+			console.log("taking this action: " + choice);
+			
+			if (choice <= 3) {
+				client.writeToCurrentRoom("|/move " + (choice+1));
+			} else if (choice > 3) {
+				client.writeToCurrentRoom("|/switch " + (choice-3));
+			}
+		}
     }
 }
 

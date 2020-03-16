@@ -5,6 +5,7 @@ from gym import spaces
 import numpy as np
 import json
 import functools
+import time
 
 def getLen(name):
 	with open("data/" + name + ".json") as content_file:
@@ -85,23 +86,6 @@ def flatten_dict(d):
 	return ret
 
 def make_observation_space():
-	stateCount = 0
-	for t in flatten_dict(STATE_DICT):
-		stateCount += t[2]
-	print("debug|" + str(stateCount))
-	
-	sideCount = 0
-	for t in flatten_dict(SIDE_DICT):
-		sideCount += t[2]
-	print("debug|" + str(sideCount))
-	
-	pokeCount = 0
-	for t in flatten_dict(POKE_DICT):
-		pokeCount += t[2]
-	print("debug|" + str(pokeCount))
-	# print("debug|" + str(functools.reduce(lambda a, b: map(lambda t: t[2], flatten_dict(SIDE_DICT)), a + b)))
-	# print("debug|" + str(functools.reduce(lambda a, b: map(lambda t: t[2], flatten_dict(POKE_DICT)), a + b)))
-	
 	d = flatten_dict(STATE_DICT)
 	tuples = []
 
@@ -146,12 +130,26 @@ class Pokemon(gym.Env):
 			return [self.state, self.reward, self.done]
 
 		self.counter += 1
+	
+		print("debug|from step: " + str(action))
+		print("action|" + str(action))
+		
+		msg = input()
+		tokens = msg.split("|")
+		
+		if tokens[0] is "state":
+			self.state = list(map(int, tokens[1].split(",")))
+			self.reward += 1
+		elif tokens[0] is "error":
+			self.reward -= 1
+			time.sleep(2)
 
 		# modify self.state, self.reward, self.done, 
 
-		# select something to do
+		# send action to the TypeScript side
 		# wait for turn to complete
 		# get the new state
+		
 
 		return [self.state, self.reward, self.done]
 		
