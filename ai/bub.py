@@ -20,7 +20,7 @@ tf.disable_eager_execution()
 # print("numpy: ", np.__version__)
 
 def talk(command, data):
-    print(command + "|" + data + "//////")
+    print(command + "|" + data)
 
 class QNetwork():
     def __init__(self, state_dim, action_size):
@@ -68,6 +68,8 @@ class DQNAgent():
         self.sess.run(tf.global_variables_initializer())
         
     def get_action(self, state):
+		# interpret state to find out what possible actions there are
+		
         q_state = self.q_network.get_q_state(self.sess, [state])
         action_greedy = np.argmax(q_state)
         action_random = np.random.randint(self.action_size)
@@ -95,24 +97,15 @@ if __name__ == "__main__":
         msg = input()
         # we expect a string of numbers separated by commas to turn into our state #
         state = env.reset(list(map(int, msg.split(","))))
-    #     total_reward = 0
-    #     done = False
-    #     while not done:
-    #         action = agent.get_action(state)
-    #         next_state, reward, done, info = env.step(action)
-    #         agent.train(state, action, next_state, reward, done)
-    #         env.render()
-    #         total_reward += reward
-    #         state = next_state
+		
+        total_reward = 0
+        done = False
+        while not done:
+            action = agent.get_action(state)
+            next_state, reward, done, info = env.step(action)
+            agent.train(state, action, next_state, reward, done)
+            env.render()
+            total_reward += reward
+            state = next_state
         
     # print("Episode: {}, total_reward: {:.2f}".format(ep, total_reward))
-
-#####################################################
-# example async function?
-# async def get_state_loop(client, url):
-# 	while True:
-# 	    msg = await json.loads(input())
-#         # do
-# 	return
-		
-# asyncio.run(get_state_loop())

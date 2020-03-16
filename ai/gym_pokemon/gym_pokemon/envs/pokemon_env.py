@@ -4,6 +4,7 @@ import gym
 from gym import spaces
 import numpy as np
 import json
+import functools
 
 def getLen(name):
 	with open("data/" + name + ".json") as content_file:
@@ -13,7 +14,7 @@ def getLen(name):
 # declare constants
 NUM_MOVES = getLen("movearray")
 NUM_NON_VOLATIVE_STATUSES = 7
-NUM_VOLATILE_STATUSES = getLen("volatilestatusarray")
+NUM_VOLATILE_STATUSES = getLen("volatilestatusarray") + 1
 NUM_TYPES = getLen("typearray")
 NUM_ITEMS = getLen("itemarray")
 NUM_ABILITIES = getLen("abilityarray")
@@ -84,6 +85,23 @@ def flatten_dict(d):
 	return ret
 
 def make_observation_space():
+	stateCount = 0
+	for t in flatten_dict(STATE_DICT):
+		stateCount += t[2]
+	print("debug|" + str(stateCount))
+	
+	sideCount = 0
+	for t in flatten_dict(SIDE_DICT):
+		sideCount += t[2]
+	print("debug|" + str(sideCount))
+	
+	pokeCount = 0
+	for t in flatten_dict(POKE_DICT):
+		pokeCount += t[2]
+	print("debug|" + str(pokeCount))
+	# print("debug|" + str(functools.reduce(lambda a, b: map(lambda t: t[2], flatten_dict(SIDE_DICT)), a + b)))
+	# print("debug|" + str(functools.reduce(lambda a, b: map(lambda t: t[2], flatten_dict(POKE_DICT)), a + b)))
+	
 	d = flatten_dict(STATE_DICT)
 	tuples = []
 
@@ -95,6 +113,7 @@ def make_observation_space():
 				tuples.append((t[0], t[1], 1))
 				
 	lows, highs, ignore = zip(*tuples)
+	
 	return spaces.Box(low=np.array(lows), high=np.array(highs))
 
 # the code below was just taken from a tictactoe environment, it still needs
@@ -115,9 +134,7 @@ class Pokemon(gym.Env):
 		self.add = [0, 0]
 		self.reward = 0
 
-		print(NUM_POKEMON)
-
-		self.action_space = spaces.MultiBinary(NUM_MOVES + NUM_POKEMON);
+		self.action_space = spaces.Discrete(4 + 5) # number of moves + number of pokemon slots
 		self.observation_space = make_observation_space()
 		# print(self.observation_space)
 

@@ -37,10 +37,12 @@ function handleBubTalk(data: string)
     // switch|434
     // chat|jefiowjifeo
     // debug|whatever
-
+	
     const actionType = data.split("|")[0];
     const actionData = data.split("|")[1];
-
+	
+	// console.log(JSON.stringify(data));
+	
     switch (actionType)
     {
         case "debug":
@@ -53,14 +55,14 @@ function handleBubTalk(data: string)
 
 const config = JSON.parse(configStr);
 const client = new Client(config, init, writeToBub);
-const reader = new StreamReader("//////", handleBubTalk);
+const reader = new StreamReader("\n", handleBubTalk);
 
 function init()
 {
     console.log("============");
     bub = spawn("python", ["ai/bub.py"]);
     bub.stdin.setDefaultEncoding("utf8");
-    bub.stdout.pipe(process.stdout);
+    // bub.stdout.pipe(process.stdout);
     bub.stderr.pipe(process.stderr);
     bub.stdout.addListener("data", reader.readChunk);
     //bub.stdin.end();

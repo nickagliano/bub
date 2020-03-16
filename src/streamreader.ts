@@ -7,15 +7,17 @@ export class StreamReader
 
     }
 
-    public readChunk = (data: string) =>
+    public readChunk = (dataBuffer: Buffer) =>
     {
+		const data = dataBuffer.toString();
         this.current += data;
-        const index = this.current.indexOf(this.terminator);
+        let index = this.current.indexOf(this.terminator);
 
-        if (index !== -1)
+        while (index !== -1)
         {
             this.onData(this.current.substr(0, index));
             this.current = this.current.substr(index + this.terminator.length);
+			index = this.current.indexOf(this.terminator);
         }
     }
 }

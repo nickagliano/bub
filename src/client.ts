@@ -182,21 +182,25 @@ export default class Client
     
                     if (data.teamPreview)
                     {
-                        this.stateBuilder.parseFirstRequest(data);
+						this.stateBuilder.parseFirstRequest(data);
                     }
                     else if (data.forceSwitch)
                     {
+						this.writeToBub(this.stateBuilder.getState().join(","));
+						
                         // switch //
-                        const pokemon = data.side.pokemon;
-                        const switchTo = pokemon.findIndex(p => p.condition !== "0 fnt" && p.active === false) + 1;
-                        this.write(roomId + "|/switch " + switchTo.toString());
+                        // const pokemon = data.side.pokemon;
+                        // const switchTo = pokemon.findIndex(p => p.condition !== "0 fnt" && p.active === false) + 1;
+                        // this.write(roomId + "|/switch " + switchTo.toString());
                     }
                     else if (data.active)
                     {
+                        console.log("sending state to lil bub")
+                        this.writeToBub(this.stateBuilder.getState().join(","));
                         // pick move //
-                        const numMoves = data.active[0].moves.length;
-                        const pick = Math.floor(Math.random() * numMoves) + 1;
-                        this.write(roomId + "|/move " + pick.toString());
+                        // const numMoves = data.active[0].moves.length;
+                        // const pick = Math.floor(Math.random() * numMoves) + 1;
+                        // this.write(roomId + "|/move " + pick.toString());
                     }
                     else
                     {
@@ -218,7 +222,7 @@ export default class Client
             }
             case "teampreview":
             {
-                this.writeToBub(this.stateBuilder.getState().join(","));
+				this.write(roomId + "|/team 123456");
                 break;
             }
         }
