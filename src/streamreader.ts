@@ -15,7 +15,7 @@ export class StreamReader
         if (index !== -1)
         {
             this.onData(this.current.substr(0, index));
-            this.current = this.current.substr(index + 1);
+            this.current = this.current.substr(index + this.terminator.length);
         }
     }
 }
