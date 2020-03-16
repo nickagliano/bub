@@ -10,6 +10,17 @@ this should have the following format:
     "password": "password here"
 }
 ```
+
+
+then u should create virtual environment and download the necessary dependencies through pip using the requirements.txt file
+maybe like so: 
+```
+cd ai
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
 then u can do the following:
 * run `npm install`
 * run `npm run fetchdata` to fetch pokemon/move/ability/etc data that bub requires
