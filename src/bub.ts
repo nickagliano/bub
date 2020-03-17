@@ -56,9 +56,9 @@ function handleBubTalk(data: string)
 			console.log("taking this action: " + choice);
 			
 			if (choice <= 3) {
-				client.writeToCurrentRoom("|/move " + (choice+1));
+				client.writeToCurrentRoom("|/move " + (choice+1)); // choice + 1 because moves are 0 indexed
 			} else if (choice > 3) {
-				client.writeToCurrentRoom("|/switch " + (choice-3));
+				client.writeToCurrentRoom("|/switch " + (choice-2)); // choice - 2 because 
 			}
 		}
     }

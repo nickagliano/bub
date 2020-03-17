@@ -72,7 +72,6 @@ class DQNAgent():
         action_greedy = np.argmax(q_state)
         action_random = np.random.randint(self.action_size)
         action = action_random if random.random() < self.eps else action_greedy
-        print("debug|from get_action: " + str(action))
         return action
     
     def train(self, state, action, next_state, reward, done):
@@ -89,23 +88,31 @@ class DQNAgent():
         self.sess.close()
 
 if __name__ == "__main__":
-    agent = DQNAgent(env)
     talk("debug", "hi im bub")
+	
+    agent = DQNAgent(env)
+    num_battles = 0
 
-    while True:
+    while num_battles < 100: 
+		# add -- code to find a battle
+		# add -- start battle timer
+		
         msg = input()
-        # we expect a string of numbers separated by commas to turn into our state #
-        state = env.reset(list(map(int, msg.split("|")[1].split(","))))
+        # interpret initial state!
+        #     we expect a string of numbers separated by commas to turn into our state
+        state = env.reset(list(map(int, msg.split("|")[1].split(",")))) 
 		
         total_reward = 0
         done = False
-        while not done:
+        while not done: # a single battle
             action = agent.get_action(state)
-            # next_state, reward, done, info = env.step(action)
-            next_state, reward, done = env.step(action)
+            # next_state, reward, done, info = env.step(action) # old step func call
+            next_state, reward, done = env.step(action) # new step func call, without info
             agent.train(state, action, next_state, reward, done)
             env.render()
             total_reward += reward
             state = next_state
+			
+        num_battles += 1
         
-    # print("Episode: {}, total_reward: {:.2f}".format(ep, total_reward))
+        print("debug|Episode: {}, total_reward: {:.2f}".format(num_battles, total_reward))

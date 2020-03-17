@@ -126,29 +126,31 @@ class Pokemon(gym.Env):
 	#     calculate the reward, and return the next observation.
 	def step(self, action):
 		if self.done == 1:
-			# print("Game Over")
 			return [self.state, self.reward, self.done]
 
 		self.counter += 1
 	
-		print("debug|from step: " + str(action))
-		print("action|" + str(action))
+		print("action|" + str(action)) # do action
 		
-		msg = input()
-		tokens = msg.split("|")
+		msg = input() # wait for response
+		tokens = msg.split("|") 
 		
-		if tokens[0] is "state":
+		# interpret what type of response returns from the action
+		if tokens[0] is "state": # the action taken led to a new state
 			self.state = list(map(int, tokens[1].split(",")))
 			self.reward += 1
-		elif tokens[0] is "error":
-			self.reward -= 1
+			# add more nuanced reward calculations
+			#	based on damage received, dealt, healed, who fainted, etc.
+		elif tokens[0] is "error": # there was an error with the action taken
+			self.reward -= 2
 			time.sleep(2)
-
-		# modify self.state, self.reward, self.done, 
-
-		# send action to the TypeScript side
-		# wait for turn to complete
-		# get the new state
+		elif tokens[0] is "done": # the action taken led to the end of the battle
+			self.done = 1
+			# interpet if it was a win or a loss
+			if tokens[1] is "win":
+				pass # reward
+			elif tokens[1] is "loss": 
+				pass # reprimand
 		
 
 		return [self.state, self.reward, self.done]
