@@ -6,6 +6,10 @@ import numpy as np
 import json
 import functools
 import time
+import os, sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+from communicator import *
 
 def getLen(name):
     with open("data/" + name + ".json") as content_file:
@@ -108,62 +112,66 @@ class Pokemon(gym.Env):
     
     # the init function is where the observation_space and action_space will be defined
     def __init__(self):
-        self.state = []
-        for i in range(3):
-            self.state += [[]]
-            for j in range(3):
-                self.state[i] += ["-"]
-        self.counter = 0
-        self.done = 0
-        self.add = [0, 0]
-        self.reward = 0
+        self.add = [0, 0] # idk what this is for or if we need it
+        self.counters = dict() # maps room ids to counters
+        self.states = dict() # maps room ids to states
+        self.dones = dict() # maps room ids to whether we are done or not
+        self.rewards = dict() # maps room ids to rewards
 
         self.action_space = spaces.Discrete(4 + 5) # number of moves + number of pokemon slots
         self.observation_space = make_observation_space()
         # print(self.observation_space)
 
-    # At each step we will take the specified action (chosen by our model), 
-    #     calculate the reward, and return the next observation.
-    def step(self, action):
-        if self.done == 1:
-            return [self.state, self.reward, self.done]
+    # returns state, reward, wasReset #
+    def receiveNewState(self, roomId, state):
+        if roomId not in self.states or self.dones[roomId]: # reset state
+            self.reset(roomId, state)
+            return state, 0, True
+            
+        prevState = self.states[roomId]
+        self.states[roomId] = state
+        self.counters[roomId] += 1
 
-        self.counter += 1
-    
-        print("action|" + str(action)) # do action
-        
-        msg = input() # wait for response
-        tokens = msg.split("|") 
-        
-        # interpret what type of response returns from the action
-        if tokens[0] is "state": # the action taken led to a new state
-            self.state = list(map(int, tokens[1].split(",")))
-            self.reward += 1
-            # add more nuanced reward calculations
-            #    based on damage received, dealt, healed, who fainted, etc.
-        elif tokens[0] is "error": # there was an error with the action taken
-            self.reward -= 2
-            time.sleep(2)
-        elif tokens[0] is "done": # the action taken led to the end of the battle
-            self.done = 1
-            # interpet if it was a win or a loss
-            if tokens[1] is "win":
-                pass # reward
-            elif tokens[1] is "loss": 
-                pass # reprimand
-        
+        # TODO: calculate reward based on some metric
+        reward = 1 # chose a valid move
 
-        return [self.state, self.reward, self.done]
+        self.rewards[roomId] += reward
         
+        return self.states[roomId], reward, False
+
+    def receiveError(self, roomId):
+        if roomId not in self.states or self.dones[roomId]:
+            sendCommand("debug", "tried to send error to bad room id")
+            return 0
+        reward = -1
+        self.rewards[roomId] += reward
+        return reward
+
+    def receiveDone(self, roomId, won):
+        if roomId not in self.states or self.dones[roomId]:
+            sendCommand("debug", "tried to send done to bad room id")
+            return 0
+        self.dones[roomId] = True
+        if won:
+            reward = 10
+        else:
+            reward = -10
+        return reward
         
     # called any time a new environment is created, or to reset an existing environment’s state
     # here we set the team available to BUB, all the info we have about his opponents team, etc.
-    def reset(self, state):
-        self.counter = 0
-        self.done = 0
-        self.reward = 0
-        self.state = state
-        return self.state
+    def reset(self, roomId, state):
+        self.counters[roomId] = 0
+        self.dones[roomId] = False
+        self.rewards[roomId] = 0
+        self.states[roomId] = state
+
+    # clear out everything relating to a room bc we're done #
+    def clear(self, roomId):
+        del self.counters[roomId]
+        del self.dones[roomId]
+        del self.rewards[roomId]
+        del self.states[roomId]
         
     # Render the environment to the screen. 
     # For tictactoe this is just updating the board, but for BUB we could do 

@@ -33,32 +33,30 @@ catch (e)
 
 function handleBubTalk(data: string)
 {
-    // move|9403
-    // switch|434
-    // chat|jefiowjifeo
+    // action|roomid|choice
     // debug|whatever
-    
-    const actionType = data.split("|")[0];
-    const actionData = data.split("|")[1];
+
+    const tokens = data.split("|");
     
     // console.log(JSON.stringify(data));
     
-    switch (actionType)
+    switch (tokens[0])
     {
         case "debug":
         {
-            console.log("bub debug: " + actionData)
+            console.log("bub debug: " + tokens[1])
             break;
         }
         case "action":
         {
-            const choice = parseInt(actionData);
-            console.log("taking this action: " + choice);
+            const roomId = tokens[1];
+            const choice = parseInt(tokens[2]);
+            console.log("[" + roomId + "] taking this action: " + choice);
             
             if (choice <= 3) {
-                client.writeToCurrentRoom("|/move " + (choice+1)); // choice + 1 because moves are 0 indexed
+                client.writeToRoom(roomId, "/move " + (choice+1)); // choice + 1 because moves are 0 indexed
             } else if (choice > 3) {
-                client.writeToCurrentRoom("|/switch " + (choice-2)); // choice - 2 because 
+                client.writeToRoom(roomId, "/switch " + (choice-2)); // choice - 2 because 
             }
         }
     }
@@ -80,6 +78,6 @@ function init()
 
     readline.on("line", (input) =>
     {
-        client.write(input);
+        client.writeRaw(input);
     });
 }
