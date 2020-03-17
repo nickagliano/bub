@@ -43,7 +43,7 @@ class QNetwork():
     def get_q_state(self, session, state):
         q_state = session.run(self.q_state, feed_dict={self.state_in: state})
         return q_state
-		
+        
 class ReplayBuffer():
     def __init__(self, maxlen):
         self.buffer = deque(maxlen=maxlen)
@@ -89,19 +89,19 @@ class DQNAgent():
 
 if __name__ == "__main__":
     talk("debug", "hi im bub")
-	
+    
     agent = DQNAgent(env)
     num_battles = 0
 
     while num_battles < 100: 
-		# add -- code to find a battle
-		# add -- start battle timer
-		
+        # add -- code to find a battle
+        # add -- start battle timer
+        
         msg = input()
         # interpret initial state!
         #     we expect a string of numbers separated by commas to turn into our state
         state = env.reset(list(map(int, msg.split("|")[1].split(",")))) 
-		
+        
         total_reward = 0
         done = False
         while not done: # a single battle
@@ -112,7 +112,7 @@ if __name__ == "__main__":
             env.render()
             total_reward += reward
             state = next_state
-			
+            
         num_battles += 1
         
         print("debug|Episode: {}, total_reward: {:.2f}".format(num_battles, total_reward))

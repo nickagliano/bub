@@ -37,12 +37,12 @@ function handleBubTalk(data: string)
     // switch|434
     // chat|jefiowjifeo
     // debug|whatever
-	
+    
     const actionType = data.split("|")[0];
     const actionData = data.split("|")[1];
-	
-	// console.log(JSON.stringify(data));
-	
+    
+    // console.log(JSON.stringify(data));
+    
     switch (actionType)
     {
         case "debug":
@@ -50,17 +50,17 @@ function handleBubTalk(data: string)
             console.log("bub debug: " + actionData)
             break;
         }
-		case "action":
-		{
-			const choice = parseInt(actionData);
-			console.log("taking this action: " + choice);
-			
-			if (choice <= 3) {
-				client.writeToCurrentRoom("|/move " + (choice+1)); // choice + 1 because moves are 0 indexed
-			} else if (choice > 3) {
-				client.writeToCurrentRoom("|/switch " + (choice-2)); // choice - 2 because 
-			}
-		}
+        case "action":
+        {
+            const choice = parseInt(actionData);
+            console.log("taking this action: " + choice);
+            
+            if (choice <= 3) {
+                client.writeToCurrentRoom("|/move " + (choice+1)); // choice + 1 because moves are 0 indexed
+            } else if (choice > 3) {
+                client.writeToCurrentRoom("|/switch " + (choice-2)); // choice - 2 because 
+            }
+        }
     }
 }
 

@@ -2,28 +2,28 @@ import * as fs from "fs";
 
 interface PokedexData
 {
-	num: number;
-	species: string;
-	types: string[];
-	baseStats: {
-		hp: number;
-		atk: number;
-		def: number;
-		spa: number;
-		spd: number;
-		spe: number;
-	};
-	abilities: {[index: string]: string}
-	gender?: any;
-	heightm: number;
-	weightkg: number;
-	color: string;
-	evos?: string[]
-	baseSpecies?: string;
-	forme?: string;
-	baseForme?: string;
-	otherFormes?: string[];
-	inheritsFrom?: string;
+    num: number;
+    species: string;
+    types: string[];
+    baseStats: {
+        hp: number;
+        atk: number;
+        def: number;
+        spa: number;
+        spd: number;
+        spe: number;
+    };
+    abilities: {[index: string]: string}
+    gender?: any;
+    heightm: number;
+    weightkg: number;
+    color: string;
+    evos?: string[]
+    baseSpecies?: string;
+    forme?: string;
+    baseForme?: string;
+    otherFormes?: string[];
+    inheritsFrom?: string;
 };
 
 function get(name: string): any

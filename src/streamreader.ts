@@ -9,7 +9,7 @@ export class StreamReader
 
     public readChunk = (dataBuffer: Buffer) =>
     {
-		const data = dataBuffer.toString();
+        const data = dataBuffer.toString();
         this.current += data;
         let index = this.current.indexOf(this.terminator);
 
@@ -17,7 +17,7 @@ export class StreamReader
         {
             this.onData(this.current.substr(0, index));
             this.current = this.current.substr(index + this.terminator.length);
-			index = this.current.indexOf(this.terminator);
+            index = this.current.indexOf(this.terminator);
         }
     }
 }

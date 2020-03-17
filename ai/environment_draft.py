@@ -82,6 +82,6 @@ observation_space = spaces.Dict({
 
 # action space made with multibinary (1 = can use that move/can switch to that poke, orders correspond with MoveArray and PokemonArray)
 action_space = spaces.Dict({
-	"moveActionsDiscrete": spaces.MultiBinary(numMoves), # which moves BUB can choose
-	"switchActionsDiscrete": spaces.MultiBinary(numPokemon) # which pokemon BUB can switch to
+    "moveActionsDiscrete": spaces.MultiBinary(numMoves), # which moves BUB can choose
+    "switchActionsDiscrete": spaces.MultiBinary(numPokemon) # which pokemon BUB can switch to
 })
