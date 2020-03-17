@@ -92,84 +92,9 @@ export default class Client
     {
         switch (tokens[0])
         {
-            case "challstr": // TODO: handle failed login better
+            case "challstr":
             {
-                this.challstr = {
-                    id: tokens[1],
-                    str: tokens[2]
-                };
-    
-                const data = "act=login&name=" + this.sanitizeName(this.config.username) +
-                    "&pass=" + this.config.password +
-                    "&challengekeyid=" + this.challstr.id +
-                    "&challenge=" + this.challstr.str;
-
-                console.log("logging in as " + this.sanitizeName(this.config.username));
-
-                const urlData = url.parse(this.actionAddr);
-    
-                const req = https.request(
-                    {
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                            "Content-Length": data.length
-                        },
-                        method: "POST",
-                        hostname: urlData.hostname,
-                        port: urlData.port,
-                        path: urlData.path,
-                        agent: false
-                    },
-                    (res) =>
-                    {
-                        res.setEncoding("utf8");
-                        let data: any = "";
-                        res.on("data", d => data += d);
-                        res.on("end", () =>
-                        {
-                            if (data === ";")
-                            {
-                                console.log("cant log in");
-                                return;
-                            }
-                            else if (data.length < 50)
-                            {
-                                console.log("cant log in 2");
-                                return;
-                            }
-                            else if (data.indexOf("heavy load") !== -1)
-                            {
-                                console.log("cant log in - heavy load");
-                                return;
-                            }
-                            
-                            //console.log(data);
-                            
-                            data = JSON.parse(data.substr(1));
-                            let assertion: string;
-                            if (data.actionsuccess)
-                            {
-                                assertion = data.assertion;
-                            }
-                            else
-                            {
-                                console.log("cant log in - ", data);
-                                return;
-                            }
-    
-                            this.write("|/trn " + this.sanitizeName(this.config.username) + ",300," + assertion);
-                            this.write("|/avatar 120");
-                        });
-                    }
-                );
-    
-                req.on("error", (e) =>
-                {
-                    console.log("error logging in - " + e.message);
-                });
-    
-                req.write(data);
-                req.end();
+                this.respondToChallStr(tokens);
                 break;
             }
             case "updateuser":
@@ -240,5 +165,85 @@ export default class Client
 				}
 			}
         }
+    }
+
+    private respondToChallStr(tokens: string[]) // TODO: handle failed login better
+    {
+        this.challstr = {
+            id: tokens[1],
+            str: tokens[2]
+        };
+
+        const data = "act=login&name=" + this.sanitizeName(this.config.username) +
+            "&pass=" + this.config.password +
+            "&challengekeyid=" + this.challstr.id +
+            "&challenge=" + this.challstr.str;
+
+        console.log("logging in as " + this.sanitizeName(this.config.username));
+
+        const urlData = url.parse(this.actionAddr);
+
+        const req = https.request(
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Length": data.length
+                },
+                method: "POST",
+                hostname: urlData.hostname,
+                port: urlData.port,
+                path: urlData.path,
+                agent: false
+            },
+            (res) =>
+            {
+                res.setEncoding("utf8");
+                let data: any = "";
+                res.on("data", d => data += d);
+                res.on("end", () =>
+                {
+                    if (data === ";")
+                    {
+                        console.log("cant log in");
+                        return;
+                    }
+                    else if (data.length < 50)
+                    {
+                        console.log("cant log in 2");
+                        return;
+                    }
+                    else if (data.indexOf("heavy load") !== -1)
+                    {
+                        console.log("cant log in - heavy load");
+                        return;
+                    }
+                    
+                    //console.log(data);
+                    
+                    data = JSON.parse(data.substr(1));
+                    let assertion: string;
+                    if (data.actionsuccess)
+                    {
+                        assertion = data.assertion;
+                    }
+                    else
+                    {
+                        console.log("cant log in - ", data);
+                        return;
+                    }
+
+                    this.write("|/trn " + this.sanitizeName(this.config.username) + ",300," + assertion);
+                    this.write("|/avatar 120");
+                });
+            }
+        );
+
+        req.on("error", (e) =>
+        {
+            console.log("error logging in - " + e.message);
+        });
+
+        req.write(data);
+        req.end();
     }
 }
