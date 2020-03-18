@@ -20,14 +20,11 @@ export default class Client
     private onconnect: () => any;
     private receivedAck = false;
     private logStream: fs.WriteStream;
-    private stateBuilder: StateBuilder;
-    private roomId: string = "";
+    private states: Map<string, StateBuilder> = new Map();
+    private messageQueue: string[] = [];
 
     constructor(config: Config, onconnect: () => any, private writeToBub: (obj: string) => any)
     {
-        // set up statebuilder //
-        this.stateBuilder = new StateBuilder();
-
         // set up logging //
         this.logStream = fs.createWriteStream("log.txt", { flags: "a", encoding: "utf8" });
 
@@ -59,6 +56,16 @@ export default class Client
                 });
             }
         });
+
+        setInterval(() =>
+        {
+            if (this.messageQueue.length > 0)
+            {
+                const message = this.messageQueue.shift();
+                console.log("sending to showdown: " + message);
+                this.socket.send(message);
+            }
+        }, 1000);
     }
 
     private log(msg: string): void
@@ -71,21 +78,24 @@ export default class Client
         return text.toLowerCase().replace(/[^a-z0-9]/g, "");
     }
 
-    public write(message: string): void
+    public writeRaw(message: string): void
     {
-        console.log("sending to showdown: " + message);
-        this.socket.send(message);
+        this.messageQueue.push(message);
     }
-    
-    public writeToCurrentRoom(message: string): void
+
+    public writeToRoom(roomId: string, message: string): void
     {
-        console.log("sending to showdown: " + message);
-        this.socket.send(this.roomId + message);
+        this.writeRaw(roomId + "|" + message);
+    }
+
+    public writeGlobal(message: string): void
+    {
+        this.writeRaw("|" + message);
     }
 
     public findBattle(): void
     {
-        this.write("/battle!");
+        this.writeRaw("/battle!");
     }
 
     private handleMessage(roomId: string, tokens: string[]): void
@@ -99,7 +109,7 @@ export default class Client
             }
             case "updateuser":
             {
-                if (!this.receivedAck && tokens[1].substr(1) === this.sanitizeName(this.config.username))
+                if (!this.receivedAck && this.sanitizeName(tokens[1].substr(1)) === this.sanitizeName(this.config.username))
                 {
                     this.receivedAck = true;
                     this.onconnect();
@@ -114,26 +124,27 @@ export default class Client
     
                     if (data.teamPreview)
                     {
-                        this.roomId = roomId;
-                        this.stateBuilder.parseFirstRequest(data);
+                        const newState = new StateBuilder();
+                        newState.parseFirstRequest(data);
+                        this.states.set(roomId, newState);
                     }
                     else if (data.forceSwitch)
                     {
-                        this.writeToBub("state|" + this.stateBuilder.getState().join(","));
+                        this.writeToBub("state|" + roomId + "|" + this.states.get(roomId).getState().join(","));
                         
                         // switch //
                         // const pokemon = data.side.pokemon;
                         // const switchTo = pokemon.findIndex(p => p.condition !== "0 fnt" && p.active === false) + 1;
-                        // this.write(roomId + "|/switch " + switchTo.toString());
+                        // this.writeRaw(roomId + "|/switch " + switchTo.toString());
                     }
                     else if (data.active)
                     {
                         console.log("sending state to lil bub")
-                        this.writeToBub("state|" + this.stateBuilder.getState().join(","));
+                        this.writeToBub("state|" + roomId + "|" + this.states.get(roomId).getState().join(","));
                         // pick move //
                         // const numMoves = data.active[0].moves.length;
                         // const pick = Math.floor(Math.random() * numMoves) + 1;
-                        // this.write(roomId + "|/move " + pick.toString());
+                        // this.writeRaw(roomId + "|/move " + pick.toString());
                     }
                     else
                     {
@@ -145,24 +156,38 @@ export default class Client
             }
             case "poke":
             {
-                this.stateBuilder.parsePoke(tokens[1] as "p1" | "p2", tokens[2]);
+                this.states.get(roomId).parsePoke(tokens[1] as "p1" | "p2", tokens[2]);
                 break;
             }
             case "clearpoke":
             {
-                this.stateBuilder.clearPoke();
+                this.states.get(roomId).clearPoke();
                 break;
             }
             case "teampreview":
             {
-                this.write(roomId + "|/team 123456");
+                this.writeToRoom(roomId, "/team 123456");
                 break;
             }
             case "error":
             {
-                if (tokens[1].startsWith("[Invalid choice]")) {
-                    this.writeToBub("error|poo")
+                if (tokens[1].startsWith("[Invalid choice]"))
+                {
+                    this.writeToBub("error|" + roomId + "|poo")
                 }
+                break;
+            }
+            case "win":
+            {
+                let winLoseString = "lose";
+
+                if (this.sanitizeName(tokens[1]) === this.sanitizeName(this.config.username))
+                {
+                    winLoseString = "win";
+                }
+
+                this.writeToBub("done|" + roomId + "|" + winLoseString);
+                break;
             }
         }
     }
@@ -232,8 +257,8 @@ export default class Client
                         return;
                     }
 
-                    this.write("|/trn " + this.sanitizeName(this.config.username) + ",300," + assertion);
-                    this.write("|/avatar 120");
+                    this.writeGlobal("/trn " + this.sanitizeName(this.config.username) + ",300," + assertion);
+                    this.writeGlobal("/avatar 120");
                 });
             }
         );

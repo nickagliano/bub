@@ -8,6 +8,7 @@ from collections import deque
 import numpy as np
 import gym_pokemon.gym_pokemon as gym_pokemon
 import gym_pokemon.gym_pokemon.envs as gym_env
+from communicator import *
 # import asyncio
 
 env_name = "pokemon-v0"
@@ -18,9 +19,6 @@ tf.disable_eager_execution()
 # print("tensorflow: ", tf.__version__)
 # print("gym: ", gym.__version__)
 # print("numpy: ", np.__version__)
-
-def talk(command, data):
-    print(command + "|" + data)
 
 class QNetwork():
     def __init__(self, state_dim, action_size):
@@ -88,31 +86,42 @@ class DQNAgent():
         self.sess.close()
 
 if __name__ == "__main__":
-    talk("debug", "hi im bub")
+    sendCommand("debug", "hi im bub")
     
     agent = DQNAgent(env)
     num_battles = 0
+    states = dict() # map room ids to states
+    actions = dict() # map room ids to actions
 
-    while num_battles < 100: 
-        # add -- code to find a battle
-        # add -- start battle timer
-        
-        msg = input()
-        # interpret initial state!
-        #     we expect a string of numbers separated by commas to turn into our state
-        state = env.reset(list(map(int, msg.split("|")[1].split(",")))) 
-        
-        total_reward = 0
-        done = False
-        while not done: # a single battle
-            action = agent.get_action(state)
-            # next_state, reward, done, info = env.step(action) # old step func call
-            next_state, reward, done = env.step(action) # new step func call, without info
-            agent.train(state, action, next_state, reward, done)
-            env.render()
-            total_reward += reward
-            state = next_state
-            
-        num_battles += 1
-        
-        print("debug|Episode: {}, total_reward: {:.2f}".format(num_battles, total_reward))
+    while True:
+        command, data = awaitCommand()
+        roomId = data[0]
+        data = data[1:] # will hold any extra info beyond room id now
+        next_state = None
+
+        if roomId in states:
+            next_state = states[roomId] # if state doesnt change we default to prev state
+
+        # sendCommand("debug", "/" + str(command is "state") + "/" + str(command == "state"))
+
+        if command == "state":
+            next_state, reward, wasReset = env.receiveNewState(roomId, data[0].split(","))
+            # sendCommand("debug", "pee" + ",".join(next_state))
+        elif command == "error": # bub messed up OOOPS!!
+            reward = env.receiveError(roomId)
+        elif command == "done":
+            env.receiveDone(roomId, data[0] == "win")
+            sendCommand("debug", "Episode: {}, total_reward: {:.2f}".format(num_battles, env.rewards[roomId]))
+            num_battles += 1
+
+        if roomId in actions: # don't run for first state
+            agent.train(states[roomId], actions[roomId], next_state, reward, env.dones[roomId])
+        states[roomId] = next_state
+
+        if not env.dones[roomId]:
+            actions[roomId] = agent.get_action(next_state)
+            sendCommand("action", [ roomId, actions[roomId] ])
+        else: # lets clear some stuff out bc we're done
+            del actions[roomId]
+            del states[roomId]
+            env.clear(roomId)
