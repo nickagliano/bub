@@ -45,6 +45,7 @@ POKE_DICT = dict(
     volatileStatus=Bitfield(NUM_VOLATILE_STATUSES),
     baseStats=MultiDiscrete(0, 255, 6), # hp, atk, def, spa, spd, spe
     battleStats=MultiDiscrete(0, 999999999, 8), # + acc, eva
+    battleStatBoosts=MultiDiscrete(-6, 6, 8), # + acc, eva
     item=Discrete(0, NUM_ITEMS + 1),
     itemConsumed=Boolean,
     knownAbility=Discrete(0, NUM_ABILITIES + 1), # 0 is unknown/none
