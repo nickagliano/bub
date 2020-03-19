@@ -374,7 +374,7 @@ export default class Client
             case "-mustrecharge":
             {
                 // pokemon
-                this.states.get(roomId).parseMustRecharge(tokens[1], tokens[2], tokens[3]);
+                this.states.get(roomId).parseMustRecharge(tokens[1]);
                 break;
             }
             case "-singlemove":
