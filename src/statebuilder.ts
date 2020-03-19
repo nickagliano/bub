@@ -181,6 +181,18 @@ export default class StateBuilder
         if (side !== this.side)
         {
             const cleanName = formatName(details.split(",")[0]);
+            let learnset = [];
+
+            if (BattleLearnsets.hasOwnProperty(cleanName))
+            {
+                learnset = Object.keys(BattleLearnsets[cleanName].learnset);
+            }
+            else
+            {
+                const base = formatName(BattlePokedex[cleanName].baseSpecies);
+                learnset = Object.keys(BattleLearnsets[base].learnset);
+            }
+
             this.state.oppSide["poke" + (++this.pokeCounter).toString()] = {
                 baseStats: Object.values(BattlePokedex[cleanName].baseStats),
                 battleStats: [
@@ -200,7 +212,7 @@ export default class StateBuilder
                 nonVolatileStatus: 0,
                 num: zeroIfNotFound(PokemonArray.indexOf(cleanName)),
                 possibleAbilities: learnedBitfield(AbilityArray, Object.values(BattlePokedex[cleanName].abilities).map(formatName)),
-                possibleMoves: learnedBitfield(MoveArray, Object.keys(BattleLearnsets[cleanName].learnset)),
+                possibleMoves: learnedBitfield(MoveArray, learnset),
                 types: learnedBitfield(TypeArray, BattlePokedex[cleanName].types.map(formatName)),
                 volatileStatus: Array(NUM_VOLATILE_STATUSES).fill(0)
             } as BUBStatePokeData;
