@@ -194,181 +194,220 @@ export default class Client
             case "-sethp":
             {
                 // pokemon|hp + status
-                
+                this.states.get(roomId).parseSetHp(tokens[2], tokens[3]);
+                break;
             }
             case "-status":
             {
                 // pokemon|status
+                this.states.get(roomId).parseStatus(tokens[1], tokens[2]);
+                break;
             }
             case "-curestatus":
             {
                 // pokemon|status
+                this.states.get(roomId).parseCureStatus(tokens[1], tokens[2]);
+                break;
             }
             case "-cureteam":
             {
                 // pokemon
+                this.states.get(roomId).parseCureTeam(tokens[1]);
+                break;
             }
             case "-boost":
             {
                 // pokemon|stat|amt
+                this.states.get(roomId).parseBoost(1, tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-unboost":
             {
                 // pokemon|stat|amt
+                this.states.get(roomId).parseBoost(-1, tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-setboost":
             {
                 // pokemon|stat|stage
-                
+                this.states.get(roomId).parseSetBoost(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-swapboost":
             {
                 // source|target|comma separated list of stats being swapped
-                
+                this.states.get(roomId).parseSwapBoost(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-invertboost":
             {
                 // pokemon 
-                
+                this.states.get(roomId).parseInvertBoost(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-clearboost":
             {
                 // pokemon
-                
+                this.states.get(roomId).parseClearBoost(tokens[1]);
+                break;
             }
             case "-clearallboost":
             {
                 // nothing!
-                
+                break;
             }
             case "-clearpositiveboost":
             {
                 // target|pokemon|effect
-                
+                this.states.get(roomId).parseClearPositiveBoost(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-clearnegativeboost":
             {
                 // pokemon
-                
+                this.states.get(roomId).parseNegativeBoost(tokens[1]);
+                break;
             }
             case "-copyboost":
             {
                 // source|target
-                
+                this.states.get(roomId).parseCopyBoost(tokens[1], tokens[2]);
+                break;
             }
             case "-weather":
             {
                 // weather
-                
+                this.states.get(roomId).parseWeather(tokens[1]);
+                break;
             }
             case "-fieldstart":
             {
                 // condition (field condition has started)
-                
+                this.states.get(roomId).parseFieldStart(tokens[1]);
+                break;
             }
             case "-fieldend":
             {
                 // condition (field condition has ended)
-                
+                this.states.get(roomId).parseFieldEnd(tokens[1]);
+                break;
             }
             case "-sidestart":
             {
                 // side|condition
-                
+                this.states.get(roomId).parseSideStart(tokens[1], tokens[2]);
+                break;
             }
             case "-sideend":
             {
                 // side|condition
-                
+                this.states.get(roomId).parseSideEnd(tokens[1], tokens[2]);
+                break;
             }
             case "-start": // dumb name
             {
                 // pokemon|volatilestatus
-                
+                this.states.get(roomId).parseStart(tokens[1], tokens[2]);
+                break;
             }
             case "-end": // dumb name
             {
                 // pokemon|volatilestatus
-                
+                this.states.get(roomId).parseEnd(tokens[1], tokens[2]);
+                break;
             }
             case "-item":
             {
                 // pokemon|item|effect
-                
+                this.states.get(roomId).parseStart(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-enditem":
             {
                 // pokemon|item|effect
-                
+                this.states.get(roomId).parseEndItem(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-ability":
             {
                 // pokemon|ability|effect
-                
+                this.states.get(roomId).parseAbility(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-endability":
             {
                 // pokemon
-                
+                this.states.get(roomId).parseEndAbility(tokens[1]);
+                break;
             }
             case "-transform":
             {
                 // pokemon|species
-                
+                this.states.get(roomId).parseTransform(tokens[1], tokens[2]);
+                break;
             }
             case "-activate":
             {
                 // effect
-                
+                this.states.get(roomId).parseActivate(tokens[1]);
+                break;
             }
             case "turn": 
             {
                 // just gonna be a number :)
-                
+                this.states.get(roomId).parseTurn(tokens[1]);
+                break;
             }
             case "move":
             {
-                // like : |move|p1a: Keldeo|Secret Sword|p2a: Mandibuzz
-                
-                
+                // attacker|move|defender
+                this.states.get(roomId).parseMove(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-prepare":
             {
                 // attaker|move|defender
-                
+                this.states.get(roomId).parsePrepare(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-mustrecharge":
             {
                 // pokemon
-                
+                this.states.get(roomId).parseMustRecharge(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "-singlemove":
             {
                 // pokemon|move
-                
+                this.states.get(roomId).parseSingleMove(tokens[1], tokens[2]);
+                break;
             }
             case "-singleturn":
             {
                 // pokemon|move
-                
+                this.states.get(roomId).parseSingleTurn(tokens[1], tokens[2]);
+                break;
             }
             case "switch":
             case "drag":
             {
                 // pokemon|details|hp + status
-                
+                this.states.get(roomId).parseSwitch(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "detailschange":
             case "-formechange":
             case "replace":
             {
                 // pokemon|new species|hp + status
-                
+                this.states.get(roomId).parseDetailsChange(tokens[1], tokens[2], tokens[3]);
+                break;
             }
             case "faint":
             {
                 // pokemon
-                
+                this.states.get(roomId).parseFaint(tokens[1]);
+                break;
             }
         }
     }
