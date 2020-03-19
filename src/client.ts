@@ -254,6 +254,7 @@ export default class Client
             case "-clearallboost":
             {
                 // nothing!
+                this.states.get(roomId).parseClearAllBoost();
                 break;
             }
             case "-clearpositiveboost":
