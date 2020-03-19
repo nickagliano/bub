@@ -51,16 +51,19 @@ function get(name: string): any
 }
 
 export const BattlePokedex: PokedexData = get("pokedex");
-export const PokemonArray = get("pokemonarray");
+export const PokemonArray = get("pokemonarray") as string[];
 export const BattleAbilities = get("abilities");
-export const AbilityArray = get("abilityarray");
+export const AbilityArray = get("abilityarray") as string[];
 export const BattleMovedex = get("moves");
-export const MoveArray = get("movearray");
+export const MoveArray = get("movearray") as string[];
 export const BattleItems = get("items");
-export const ItemArray = get("itemarray");
-export const VolatileStatusArray = get("volatilestatusarray");
-export const TypeArray = get("typearray");
+export const ItemArray = get("itemarray") as string[];
+export const VolatileStatusArray = get("volatilestatusarray") as string[];
+export const TypeArray = get("typearray") as string[];
 export const BattleLearnsets = get("learnsets");
+export const StatusArray = [ "none", "brn", "par", "slp", "frz", "psn", "tox", "fnt" ] as string[];
+export const StatArray = [ "hp", "atk", "def", "spa", "spd", "spe", "accuracy", "evasion" ] as string[];
+export const WeatherArray = [ "None", "RainDance", "PrimordialSea", "SunnyDay", "DesolateLand", "Sandstorm", "Hail", "DeltaStream" ] as string[];
 
 export const NUM_MOVES = MoveArray.length - 1;
 export const NUM_NON_VOLATIVE_STATUSES = 7;
@@ -69,3 +72,6 @@ export const NUM_TYPES = TypeArray.length - 1;
 export const NUM_ITEMS = ItemArray.length - 1;
 export const NUM_ABILITIES = AbilityArray.length - 1;
 export const NUM_POKEMON = PokemonArray.length - 1;
+export const NUM_STATUSES = StatusArray.length - 1;
+export const NUM_STATS = StatArray.length;
+export const NUM_WEATHER = WeatherArray.length - 1;
