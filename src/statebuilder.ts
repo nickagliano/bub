@@ -167,11 +167,6 @@ export default class StateBuilder
             this.state.turn
         ];
         
-        console.log(ret.length);
-        console.log(unpackSide(this.state.mySide).length);
-        console.log(unpackSide(this.state.oppSide).length);
-        console.log(unpackPokemon(this.state.mySide.activePokemon).length);
-        console.log(unpackPokemon(this.state.mySide.poke3).length);
         
         return ret;
     }

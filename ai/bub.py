@@ -9,7 +9,6 @@ import numpy as np
 import gym_pokemon.gym_pokemon as gym_pokemon
 import gym_pokemon.gym_pokemon.envs as gym_env
 from communicator import *
-# import asyncio
 
 env_name = "pokemon-v0"
 env = gym.make(env_name)

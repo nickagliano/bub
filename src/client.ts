@@ -189,6 +189,187 @@ export default class Client
                 this.writeToBub("done|" + roomId + "|" + winLoseString);
                 break;
             }
+            case "-damage":
+            case "-heal":
+            case "-sethp":
+            {
+                // pokemon|hp + status
+                
+            }
+            case "-status":
+            {
+                // pokemon|status
+            }
+            case "-curestatus":
+            {
+                // pokemon|status
+            }
+            case "-cureteam":
+            {
+                // pokemon
+            }
+            case "-boost":
+            {
+                // pokemon|stat|amt
+            }
+            case "-unboost":
+            {
+                // pokemon|stat|amt
+            }
+            case "-setboost":
+            {
+                // pokemon|stat|stage
+                
+            }
+            case "-swapboost":
+            {
+                // source|target|comma separated list of stats being swapped
+                
+            }
+            case "-invertboost":
+            {
+                // pokemon 
+                
+            }
+            case "-clearboost":
+            {
+                // pokemon
+                
+            }
+            case "-clearallboost":
+            {
+                // nothing!
+                
+            }
+            case "-clearpositiveboost":
+            {
+                // target|pokemon|effect
+                
+            }
+            case "-clearnegativeboost":
+            {
+                // pokemon
+                
+            }
+            case "-copyboost":
+            {
+                // source|target
+                
+            }
+            case "-weather":
+            {
+                // weather
+                
+            }
+            case "-fieldstart":
+            {
+                // condition (field condition has started)
+                
+            }
+            case "-fieldend":
+            {
+                // condition (field condition has ended)
+                
+            }
+            case "-sidestart":
+            {
+                // side|condition
+                
+            }
+            case "-sideend":
+            {
+                // side|condition
+                
+            }
+            case "-start": // dumb name
+            {
+                // pokemon|volatilestatus
+                
+            }
+            case "-end": // dumb name
+            {
+                // pokemon|volatilestatus
+                
+            }
+            case "-item":
+            {
+                // pokemon|item|effect
+                
+            }
+            case "-enditem":
+            {
+                // pokemon|item|effect
+                
+            }
+            case "-ability":
+            {
+                // pokemon|ability|effect
+                
+            }
+            case "-endability":
+            {
+                // pokemon
+                
+            }
+            case "-transform":
+            {
+                // pokemon|species
+                
+            }
+            case "-activate":
+            {
+                // effect
+                
+            }
+            case "turn": 
+            {
+                // just gonna be a number :)
+                
+            }
+            case "move":
+            {
+                // like : |move|p1a: Keldeo|Secret Sword|p2a: Mandibuzz
+                
+                
+            }
+            case "-prepare":
+            {
+                // attaker|move|defender
+                
+            }
+            case "-mustrecharge":
+            {
+                // pokemon
+                
+            }
+            case "-singlemove":
+            {
+                // pokemon|move
+                
+            }
+            case "-singleturn":
+            {
+                // pokemon|move
+                
+            }
+            case "switch":
+            case "drag":
+            {
+                // pokemon|details|hp + status
+                
+            }
+            case "detailschange":
+            case "-formechange":
+            case "replace":
+            {
+                // pokemon|new species|hp + status
+                
+            }
+            case "faint":
+            {
+                // pokemon
+                
+            }
         }
     }
 
