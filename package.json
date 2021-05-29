@@ -24,7 +24,7 @@
     "@types/node": "^12.12.14",
     "@types/ws": "^6.0.4",
     "typescript": "^3.7.2",
-    "ws": "^7.2.0"
+    "ws": "^7.4.6"
   },
   "dependencies": {
     "reduce": "^1.0.2"
